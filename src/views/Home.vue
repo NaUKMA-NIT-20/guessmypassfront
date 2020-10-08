@@ -288,6 +288,4 @@ export default {
     font-family: 'Merriweather', serif
   .v-text-field .v-counter
     color: $azure!important
-  .login
-    color: #1a237e
 </style>
