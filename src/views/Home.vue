@@ -167,14 +167,14 @@ export default {
 
       rules: {
       password: value => {
-        const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/
-        const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число та спеціальний знак.'
+        const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
+        const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число'
         return value === '' ? msg : (pattern.test(value) || msg)
         }
       },
       state: 0,
       emailRegex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
-      passwordBounds: { min: 8, max: 20 },
+      passwordBounds: { min: 8, max: 120 },
       nicknameBounds: { min: 3, max: 14 }
       }),
   computed: {
@@ -207,6 +207,15 @@ export default {
           else if (this.state === 1) this.state = 0
       },
       toLogin () {
+          this.validateLogin()
+      },
+      toRegister () {
+          this.validateRegister()
+          if (this.passwordMatch()) {
+              ///
+          }
+      },
+      validateLogin () {
           const emailValid = this.isEmailValid(this.login.email)
           const passValid = this.isPasswordValid(this.login.password)
           if (emailValid !== true) {
@@ -221,29 +230,29 @@ export default {
               alert('Ваша пошта: ' + this.login.email + '\nВаш пароль: ' + this.login.password + '.')
           }
       },
-      toRegister () {
+      validateRegister () {
           const emailValid = this.isEmailValid(this.register.email)
           const nicknameValid = this.isNicknameValid(this.register.nickname)
           const passValid = this.rules.password(this.register.password)
           const againPassValid = this.passwordMatch
           if (emailValid !== true) {
-            this.register.invalidText = emailValid
-            this.register.invalid = true
+              this.register.invalidText = emailValid
+              this.register.invalid = true
           }
           else if (nicknameValid !== true) {
-            this.register.invalidText = nicknameValid
-            this.register.invalid = true
+              this.register.invalidText = nicknameValid
+              this.register.invalid = true
           }
           else if (passValid !== true) {
-            this.register.invalidText = passValid
-            this.register.invalid = true
+              this.register.invalidText = passValid
+              this.register.invalid = true
           }
           else if (againPassValid !== true) {
-            this.register.invalidText = 'Паролі не співпадають'
-            this.register.invalid = true
+              this.register.invalidText = 'Паролі не співпадають'
+              this.register.invalid = true
           }
           else {
-            alert('Акаунт створено.\nВаша пошта: ' + this.register.email + '\nВаш нікнейм: ' + this.register.nickname + '\nВаш пароль: ' + this.register.password + '.')
+              alert('Акаунт створено.\nВаша пошта: ' + this.register.email + '\nВаш нікнейм: ' + this.register.nickname + '\nВаш пароль: ' + this.register.password + '.')
           }
       }
   }
