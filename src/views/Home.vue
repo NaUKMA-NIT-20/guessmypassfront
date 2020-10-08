@@ -12,9 +12,9 @@
                 hover
               >
                 <v-expansion-panel-header>
-                  {{item.title}}
+                  {{ item.title }}
                 </v-expansion-panel-header>
-                <v-expansion-panel-content >
+                <v-expansion-panel-content>
                   <v-form class="login" v-if="item.mission ==='login'">
                     <v-container>
                       <v-row>
@@ -26,9 +26,11 @@
                         <v-text-field
                           v-model="login.password"
                           :counter="10"
-                          label="Ваш пароль"
+                          :maxLength="10"
+                          placeholder="Password"
                           required
-                        ></v-text-field>
+                        >
+                        </v-text-field>
                       </v-row>
                       <v-row>
                         <v-btn @click="toLogin">Ввійти</v-btn>
@@ -98,93 +100,105 @@
 
 export default {
   name: 'Home',
-  components: {
-  },
+  components: {},
   data: () => ({
-      fields: {
-          login: {
-              title: 'Логін',
-              mission: 'login'
-          },
-          register: {
-              title: 'Реєстрація',
-              mission: 'register'
-          }
-      },
+    fields: {
       login: {
-          email: '',
-          password: '',
-          invalid: false,
-          invalidText: ''
+        title: 'Логін',
+        mission: 'login'
       },
       register: {
-          email: '',
-          nickname: '',
-          password: '',
-          again_password: '',
-          invalid: false,
-          invalidText: ''
+        title: 'Реєстрація',
+        mission: 'register'
+      }
+    },
+    login: {
+      email: '',
+      password: '',
+      showPass: false,
+      invalid: false,
+      invalidText: ''
+    },
+    register: {
+      email: '',
+      nickname: '',
+      password: '',
+      again_password: '',
+      invalid: false,
+      invalidText: ''
 
-      },
-      state: 0
+    },
+    state: 0
   }),
   computed: {
-      getState () {
-          return this.state
-      }
+    getState () {
+      return this.state
+    }
   },
   methods: {
-      changeState () {
-          if (this.state === 0) this.state = 1
-          else if (this.state === 1) this.state = 0
-      },
-      toLogin () {
-          if (this.login.email === '') {
-              this.login.invalidText = 'Відсутній імейл'
-              this.login.invalid = true
-          }
-          else if (this.login.password === '') {
-              this.login.invalidText = 'Відсутній пароль'
-              this.login.invalid = true
-          }
-          else {
-              alert('Ваша пошта: ' + this.login.email + '\n' + ' Ваш пароль: ' + this.login.password + '.')
-          }
-      },
-      toRegister () {
-
+    changeState () {
+      if (this.state === 0) {
+        this.state = 1
+      } else if (this.state === 1) this.state = 0
+    },
+    toLogin () {
+      if (this.login.email === '') {
+        this.login.invalidText = 'Відсутній імейл'
+        this.login.invalid = true
+      } else if (this.login.password === '') {
+        this.login.invalidText = 'Відсутній пароль'
+        this.login.invalid = true
+      } else if (!this.validEmail(this.login.email)) {
+        this.login.invalidText = 'Невірна електронна пошта'
+        this.login.invalid = true
+      } else {
+        alert('Ваша пошта: ' + this.login.email + '\n' + ' Ваш пароль: ' + this.login.password + '.')
       }
+    },
+    toRegister () {
+    },
+    validEmail (email) {
+      return /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)
+    }
   }
 }
 </script>
 <style scoped lang="sass">
-  @import "../../src/assets/sass/assets/variables/colors"
-  main.v-main
-    background: url("../../src/assets/BG.png")
-    background-color: $brown
-    background-position: center center
-    background-size: cover
-    display: flex
-    align-items: center
-  .v-expansion-panel
-    border: solid 2px $azure
-  .v-expansion-panel-header
-    font-size: 1.5rem
-    padding: 20px 24px
-  .v-expansion-panel + .v-expansion-panel
-    margin-top: 20px
-  .v-form.login .row button
-    margin-top: 50px
-    background-color: $azure!important
-    width: 100%
-    color: white
-  .v-form.register .row button
-    margin-top: 50px
-    background-color: $tangerine!important
-    width: 100%
-    color: white
-  .v-text-field
-    font-family: 'Merriweather', serif
-  .v-text-field .v-counter
-    color: $azure!important
+@import "../../src/assets/sass/assets/variables/colors"
+main.v-main
+  background: url("../../src/assets/BG.png")
+  background-color: $brown
+  background-position: center center
+  background-size: cover
+  display: flex
+  align-items: center
+
+.v-expansion-panel
+  border: solid 2px $azure
+
+.v-expansion-panel-header
+  font-size: 1.5rem
+  padding: 20px 24px
+
+.v-expansion-panel + .v-expansion-panel
+  margin-top: 20px
+
+.v-form.login .row button
+  margin-top: 50px
+  background-color: $azure !important
+  width: 100%
+  color: white
+
+.v-form.register .row button
+  margin-top: 50px
+  background-color: $tangerine !important
+  width: 100%
+  color: white
+
+.v-text-field
+  font-family: 'Merriweather', serif
+
+.v-text-field .v-counter
+  color: $azure !important
+
 </style>
