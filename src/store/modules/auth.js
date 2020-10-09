@@ -15,11 +15,21 @@ export default {
     async toRegister (context, params) {
       Axios.post('https://guessmypass.herokuapp.com/user/register', params).then(
         response => {
-          if (response.data.status === 200) {
-            context.dispatch('toLogin', { email: params.email, password: params.hashedPassword })
+          if (response.status === 200) {
+            if (response.data !== 'Wrong request. User already exists') {
+              context.dispatch('toLogin', { email: params.email, hashedPassword: params.hashedPassword })
+            }
+            else {
+              console.log(response.data)
+              return response.data
+            }
           }
+          else {
+            console.log(response.status)
+          }
+      }).catch(error => {
+        console.log(error)
       })
-      // context.commit();
     },
     async toLogin (context, params) {
       Axios.post('https://guessmypass.herokuapp.com/user/login', params).then(
@@ -27,6 +37,9 @@ export default {
           if (response.status === 200) {
             context.commit('setToken', response.data.dbId.timestamp)
             router.push('/')
+          }
+          else {
+            console.log(response.status)
           }
         }
       ).catch(error => {
