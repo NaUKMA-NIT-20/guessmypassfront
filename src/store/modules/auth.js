@@ -29,13 +29,13 @@ export default {
               if (response.data !== 'Wrong request. User already exists') {
                 resolve(response.data)
               } else {
-                reject(response.data)
+                reject(response)
               }
             } else {
-              reject(response.data)
+              reject(response)
             }
           }).catch(error => {
-             reject(error)
+             reject(error.response)
         })
       })
     },
@@ -55,7 +55,7 @@ export default {
             }
           }
         ).catch(error => {
-          reject(error)
+          reject(error.response)
         })
       })
     },

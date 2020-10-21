@@ -80,12 +80,17 @@
                     .then((user) => {
                       this.isLoading = false
                       console.log(user)
-                      alert('Welcome ' + user.username + '!!!')
                     })
                     .catch((error) => {
                       this.isLoading = false
-                      console.log(error)
-                      alert('User not found:/\n')
+                      switch (error.status) {
+                        case 404:
+                          this.invalidText = 'Користувача не знайдено:/\n'
+                          break
+                        default:
+                          this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯\n'
+                      }
+                      this.invalid = true
                     })
               }
           },
