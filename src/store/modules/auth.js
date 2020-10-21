@@ -44,9 +44,11 @@ export default {
         Axios.post('https://guessmypass.herokuapp.com/user/login', params).then(
           response => {
             if (response.status === 200) {
-              context.commit('setToken', response.data.dbId.timestamp)
               context.commit('setAuthenticated')
-              router.push('/')
+              context.commit('setToken', response.data.token)
+              router.push({
+                name: 'Home'
+              })
               resolve(response.data)
             } else {
               reject(response)
