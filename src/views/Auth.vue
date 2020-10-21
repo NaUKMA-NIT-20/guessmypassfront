@@ -61,12 +61,7 @@ export default {
           if (this.state === 0) this.state = 1
           else if (this.state === 1) this.state = 0
       }
-  },
-    beforeMount () {
-        if (localStorage.getItem('token') !== null) {
-            this.$router.push('/')
-        }
-    }
+  }
 }
 </script>
 <style scoped lang="sass">
