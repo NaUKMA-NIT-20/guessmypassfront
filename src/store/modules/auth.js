@@ -13,6 +13,11 @@ export default {
     },
     setAuthenticated (state) {
       state.authenticated = true
+    },
+    resetUser (state) {
+      localStorage.setItem('token', null)
+      state.tokenApi = localStorage.getItem('token')
+      state.authenticated = false
     }
   },
   actions: {
@@ -50,6 +55,12 @@ export default {
         ).catch(error => {
           reject(error)
         })
+      })
+    },
+    toLogout (context) {
+      context.commit('resetUser')
+      router.push({
+        name: 'Authentication'
       })
     }
   },

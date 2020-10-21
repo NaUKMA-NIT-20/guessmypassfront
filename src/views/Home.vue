@@ -58,9 +58,34 @@
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
 
-      <v-btn icon>
-        <v-icon>mdi-account-circle</v-icon>
-      </v-btn>
+      <v-menu
+        offset-y
+        bottom
+        left
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            dark
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-account-circle</v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item
+            v-for="(item, i) in auth_btn.items"
+            :key="i"
+            link
+            @click="item.action"
+          >
+            <v-icon class="v-list-item-icon">{{ item.icon }}</v-icon>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
       <v-btn icon>
         <v-icon>mdi-dots-vertical</v-icon>
@@ -86,7 +111,18 @@
                   { title: 'Home', icon: 'mdi-view-dashboard' },
                   { title: 'About', icon: 'mdi-forum' }
               ],
-              title: 'Ваші акаунти'
+              title: 'Ваші акаунти',
+              auth_btn: {
+                  items: [
+                      { title: 'Кабінет', linkName: 'my', action: '', icon: 'mdi-home' },
+                      { title: 'Вийти', linkName: null, action: this.logout, icon: 'mdi-logout' }
+                  ]
+              }
+          }
+      },
+      methods: {
+          logout () {
+              this.$store.dispatch('auth/toLogout')
           }
       }
   }
@@ -94,4 +130,9 @@
 <style lang="sass">
   html
     overflow: hidden
+
+</style>
+<style lang="sass" scoped>
+  .v-list-item-icon
+    margin-right: 10px
 </style>
