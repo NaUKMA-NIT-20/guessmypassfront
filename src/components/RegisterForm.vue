@@ -94,11 +94,6 @@
               else if (!this.emailRegex.test(email)) return 'Неправильна пошта'
               else return true
           },
-          isPasswordValid (password) {
-              if (password === '') return 'Введіть пароль'
-              else if (password.length < this.passwordBounds.min) return 'Пароль занадто короткий'
-              else return true
-          },
           isNicknameValid (nickname) {
               if (nickname === '') return 'Введіть нікнейм'
               else if (nickname.length < this.nicknameBounds.min) return 'Нікнейм занадто короткий'
@@ -112,8 +107,24 @@
           async toRegister () {
               this.validateRegister()
               if (!this.invalid) {
-                  await this.$store.dispatch('auth/toRegister',
+                this.isLoading = true
+                this.$store.dispatch('auth/toRegister',
                       { email: this.email, password: this.password, passwordHelp: 'something', username: this.nickname })
+                  .then((createdUser) => {
+                    alert('Succesfully registered.\nTrying to Login')
+                    return this.$store.dispatch('auth/toLogin',
+                      { email: this.email, password: this.password })
+                  })
+                  .then((user) => {
+                      this.isLoading = false
+                      console.log(user)
+                      alert('Welcome ' + user.username + '!!!')
+                   })
+                  .catch((error) => {
+                    this.isLoading = false
+                    console.log(error)
+                    alert('Could not register:/\n' + error)
+                  })
               }
           },
           validateRegister () {

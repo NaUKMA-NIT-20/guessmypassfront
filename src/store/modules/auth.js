@@ -8,8 +8,8 @@ export default {
   },
   mutations: {
     setToken (state, token) {
-     localStorage.setItem('token', token)
-     state.tokenApi = localStorage.getItem('token')
+      localStorage.setItem('token', token)
+      state.tokenApi = localStorage.getItem('token')
     },
     setAuthenticated (state) {
       state.authenticated = true
@@ -21,41 +21,40 @@ export default {
     }
   },
   actions: {
-    async toRegister (context, params) {
-      Axios.post('https://guessmypass.herokuapp.com/user/register', params).then(
-        response => {
-          if (response.status === 200) {
-            if (response.data !== 'Wrong request. User already exists') {
-              context.dispatch('toLogin', { email: params.email, hashedPassword: params.hashedPassword })
+    toRegister (context, params) {
+      return new Promise((resolve, reject) => {
+        Axios.post('https://guessmypass.herokuapp.com/user/register', params).then(
+          response => {
+            if (response.status === 200) {
+              if (response.data !== 'Wrong request. User already exists') {
+                resolve(response.data)
+              } else {
+                reject(response.data)
+              }
+            } else {
+              reject(response.data)
             }
-            else {
-              console.log(response.data)
-              return response.data
-            }
-          }
-          else {
-            console.log(response.status)
-          }
-      }).catch(error => {
-        console.log(error)
+          }).catch(error => {
+             reject(error)
+        })
       })
     },
-    async toLogin (context, params) {
-      Axios.post('https://guessmypass.herokuapp.com/user/login', params).then(
-        response => {
-          if (response.status === 200) {
-            context.commit('setToken', response.data.dbId.timestamp)
-            context.commit('setAuthenticated')
-            router.push({
-              name: 'Home'
-            })
+    toLogin (context, params) {
+      return new Promise((resolve, reject) => {
+        Axios.post('https://guessmypass.herokuapp.com/user/login', params).then(
+          response => {
+            if (response.status === 200) {
+              context.commit('setToken', response.data.dbId.timestamp)
+              context.commit('setAuthenticated')
+              router.push('/')
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
           }
-          else {
-            console.log(response.status)
-          }
-        }
-      ).catch(error => {
-        console.log(error)
+        ).catch(error => {
+          reject(error)
+        })
       })
     },
     toLogout (context) {
@@ -73,5 +72,4 @@ export default {
       return state.authenticated
     }
   }
-
 }
