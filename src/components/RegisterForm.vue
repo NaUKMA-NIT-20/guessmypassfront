@@ -40,7 +40,10 @@
         ></v-text-field>
       </v-row>
       <v-row>
-        <v-btn @click="toRegister">Зареєструватися</v-btn>
+        <v-btn
+          @click="toRegister"
+          :loading="isLoading"
+        >Зареєструватися</v-btn>
       </v-row>
       <v-snackbar
         v-model="invalid"
@@ -71,6 +74,7 @@
           showPassword: false,
           again_password: '',
           showAgainPassword: false,
+          isLoading: false,
           invalid: false,
           invalidText: '',
           rules: {
@@ -109,7 +113,7 @@
               this.validateRegister()
               if (!this.invalid) {
                   await this.$store.dispatch('auth/toRegister',
-                      { email: this.email, hashedPassword: this.password, username: this.nickname, passwordHelp: 'something' })
+                      { email: this.email, password: this.password, passwordHelp: 'something', username: this.nickname })
               }
           },
           validateRegister () {
@@ -132,9 +136,6 @@
               else if (againPassValid !== true) {
                   this.invalidText = 'Паролі не співпадають'
                   this.invalid = true
-              }
-              else {
-                  alert('Акаунт створено.\nВаша пошта: ' + this.email + '\nВаш нікнейм: ' + this.nickname + '\nВаш пароль: ' + this.password + '.')
               }
           }
       },

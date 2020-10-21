@@ -21,7 +21,10 @@
           required
         ></v-text-field></v-row>
       <v-row>
-        <v-btn @click="toLogin">Ввійти</v-btn>
+        <v-btn
+          @click="toLogin"
+          :loading="isLoading"
+        >Ввійти</v-btn>
       </v-row>
       <v-snackbar
         v-model="invalid"
@@ -51,6 +54,7 @@
           showPassword: false,
           invalid: false,
           invalidText: '',
+          isLoading: false,
           rules: {
               password: value => {
                   const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
@@ -75,8 +79,9 @@
           async toLogin () {
               this.validateLogin()
               if (!this.invalid) {
+                  this.isLoading = true
                   await this.$store.dispatch('auth/toLogin',
-                      { email: this.email, hashedPassword: this.password })
+                      { email: this.email, password: this.password })
               }
           },
           validateLogin () {
@@ -90,11 +95,8 @@
                   this.invalidText = passValid
                   this.invalid = true
               }
-              else {
-                  alert('Ваша пошта: ' + this.email + '\nВаш пароль: ' + this.password + '.')
-              }
           }
-          }
+      }
 
       }
 </script>
