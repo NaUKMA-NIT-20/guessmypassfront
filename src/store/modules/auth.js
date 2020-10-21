@@ -13,6 +13,11 @@ export default {
     },
     setAuthenticated (state) {
       state.authenticated = true
+    },
+    resetUser (state) {
+      localStorage.setItem('token', null)
+      state.tokenApi = localStorage.getItem('token')
+      state.authenticated = false
     }
   },
   actions: {
@@ -41,7 +46,9 @@ export default {
           if (response.status === 200) {
             context.commit('setToken', response.data.dbId.timestamp)
             context.commit('setAuthenticated')
-            router.push('/')
+            router.push({
+              name: 'Home'
+            })
           }
           else {
             console.log(response.status)
@@ -50,8 +57,13 @@ export default {
       ).catch(error => {
         console.log(error)
       })
+    },
+    toLogout (context) {
+      context.commit('resetUser')
+      router.push({
+        name: 'Authentication'
+      })
     }
-
   },
   getters: {
     getToken: state => {
