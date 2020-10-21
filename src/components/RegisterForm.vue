@@ -1,14 +1,13 @@
 <template>
   <v-form class="register">
     <v-container>
-      <v-row>
-        <v-text-field
+      <v-row><v-text-field
           v-model="email"
           type="email"
           :rules="[email => isEmailValid(email)]"
           label="Ваш імейл"
           required
-        ></v-text-field></v-row>
+      ></v-text-field></v-row>
       <v-row><v-text-field
           v-model="nickname"
           type="text"
@@ -37,8 +36,14 @@
           @click:append="() => (showAgainPassword = !showAgainPassword)"
           :type="showAgainPassword ? 'text' : 'password'"
           required
-        ></v-text-field>
-      </v-row>
+      ></v-text-field></v-row>
+      <v-row><v-text-field
+        v-model="passwordHelp"
+        type="text"
+        :rules="[hint => isPasswordHelpValid(hint)]"
+        label="Підказка до паролю"
+        required
+      ></v-text-field></v-row>
       <v-row>
         <v-btn
           @click="toRegister"
@@ -71,6 +76,7 @@
           email: '',
           nickname: '',
           password: '',
+          passwordHelp: '',
           showPassword: false,
           again_password: '',
           showAgainPassword: false,
@@ -86,7 +92,8 @@
           },
           emailRegex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
           passwordBounds: { min: 8, max: 120 },
-          nicknameBounds: { min: 3, max: 14 }
+          nicknameBounds: { min: 3, max: 14 },
+          passwordHelpBounds: { min: 3, max: 120 }
       }),
       methods: {
           isEmailValid (email) {
@@ -100,6 +107,12 @@
               else if (nickname.length > this.nicknameBounds.max) return 'Нікнейм занадто довгий'
               else return true
           },
+          isPasswordHelpValid (hint) {
+            if (hint === '') return 'Введіть підказку'
+            else if (hint.length < this.passwordHelpBounds.min) return 'Підказка занадто коротка'
+            else if (hint.length > this.passwordHelpBounds.max) return 'Підказка занадто довга'
+            else return true
+          },
           changeState () {
               if (this.state === 0) this.state = 1
               else if (this.state === 1) this.state = 0
@@ -109,7 +122,7 @@
               if (!this.invalid) {
                 this.isLoading = true
                 this.$store.dispatch('auth/toRegister',
-                      { email: this.email, password: this.password, passwordHelp: 'something', username: this.nickname })
+                      { email: this.email, password: this.password, passwordHelp: this.passwordHelp, username: this.nickname })
                   .then((createdUser) => {
                     console.log('Succesfully registered.\nTrying to Login')
                     return this.$store.dispatch('auth/toLogin',
@@ -132,6 +145,9 @@
                       case 404:
                         this.invalidText = 'Користувача створено, проте трапилась помилка при логіні. Спробуйте увійти трохи пізніше :/'
                         break
+                      case 500:
+                        this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
+                        break
                       default:
                         this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
                     }
@@ -144,6 +160,7 @@
               const nicknameValid = this.isNicknameValid(this.nickname)
               const passValid = this.rules.password(this.password)
               const againPassValid = this.passwordMatch
+              const passwordHelpValid = this.isPasswordHelpValid(this.passwordHelp)
               if (emailValid !== true) {
                   this.invalidText = emailValid
                   this.invalid = true
@@ -159,6 +176,10 @@
               else if (againPassValid !== true) {
                   this.invalidText = 'Паролі не співпадають'
                   this.invalid = true
+              }
+              else if (passwordHelpValid !== true) {
+                this.invalidText = passwordHelpValid
+                this.invalid = true
               }
           }
       },

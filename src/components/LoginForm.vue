@@ -84,11 +84,17 @@
                     .catch((error) => {
                       this.isLoading = false
                       switch (error.status) {
+                        case 400:
+                          this.invalidText = 'Неправильний запит:/'
+                          break
                         case 404:
-                          this.invalidText = 'Користувача не знайдено:/\n'
+                          this.invalidText = 'Користувача не знайдено:/'
+                          break
+                        case 500:
+                          this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
                           break
                         default:
-                          this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯\n'
+                          this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
                       }
                       this.invalid = true
                     })
