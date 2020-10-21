@@ -3,12 +3,16 @@ import router from '../../router/index.js'
 export default {
   namespaced: true,
   state: {
-    tokenApi: localStorage.getItem('token') || null
+    tokenApi: localStorage.getItem('token') || null,
+    authenticated: false
   },
   mutations: {
     setToken (state, token) {
      localStorage.setItem('token', token)
      state.tokenApi = localStorage.getItem('token')
+    },
+    setAuthenticated (state) {
+      state.authenticated = true
     }
   },
   actions: {
@@ -36,6 +40,7 @@ export default {
         response => {
           if (response.status === 200) {
             context.commit('setToken', response.data.dbId.timestamp)
+            context.commit('setAuthenticated')
             router.push('/')
           }
           else {
@@ -51,6 +56,9 @@ export default {
   getters: {
     getToken: state => {
       return state.tokenApi
+    },
+    isAuthenticated: state => {
+      return state.authenticated
     }
   }
 

@@ -2,13 +2,14 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Auth from '../views/Auth.vue'
 import Home from '../views/Home.vue'
+import store from '../store/index'
 Vue.use(VueRouter)
-
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { requiredAuth: true }
   },
   {
     path: '/auth',
@@ -28,6 +29,38 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiredAuth) {
+    if (store.getters['auth/isAuthenticated']) {
+      next()
+    }
+    else {
+      next({
+        name: 'Authentication'
+      })
+    }
+  }
+  else {
+    next()
+  }
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.name === 'Authentication') {
+    if (store.getters['auth/isAuthenticated']) {
+      next({
+        name: 'Home'
+      })
+    }
+    else {
+      next()
+    }
+  }
+  else {
+    next()
+  }
 })
 
 export default router

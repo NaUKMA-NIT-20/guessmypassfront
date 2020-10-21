@@ -14,7 +14,7 @@
           :counter="passwordBounds.max"
           :maxlength="passwordBounds.max"
           label="Ваш пароль"
-          :rules="[pass => isPasswordValid(pass)]"
+          :rules="[rules.password]"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           @click:append="() => (showPassword = !showPassword)"
           :type="showPassword ? 'text' : 'password'"

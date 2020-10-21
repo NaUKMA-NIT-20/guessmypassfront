@@ -107,7 +107,7 @@
           },
           async toRegister () {
               this.validateRegister()
-              if (this.passwordMatch && !this.invalid) {
+              if (!this.invalid) {
                   await this.$store.dispatch('auth/toRegister',
                       { email: this.email, hashedPassword: this.password, username: this.nickname, passwordHelp: 'something' })
               }
