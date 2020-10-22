@@ -58,6 +58,24 @@ export default {
       router.push({
         name: 'Authentication'
       })
+    },
+    changePassword (context, params) {
+      const config = {
+        headers: { Authorization: context.getters.getToken }
+      }
+      return new Promise((resolve, reject) => {
+        Axios.put('https://guessmypass.herokuapp.com/user/options/password', params, config)
+          .then(response => {
+            if (response.status === 200) {
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
+          })
+          .catch(error => {
+          reject(error.response)
+        })
+      })
     }
   },
   getters: {

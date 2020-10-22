@@ -11,7 +11,7 @@
       </v-card-title>
       <v-card-text>
         <v-container>
-          <account-tabs :updating="states.tabs"></account-tabs>
+          <account-tabs :updating="states.tabs" ref="tabs"></account-tabs>
         </v-container>
       </v-card-text>
       <v-card-actions>
@@ -26,10 +26,27 @@
         <v-btn
           color="blue darken-1"
           text
-          @click="closeDialog"
+          @click="saveChanges"
+          :loading="saveLoading"
         >
           Зберегти
         </v-btn>
+        <v-snackbar
+          v-model="invalid"
+        >
+          {{ invalidText }}
+
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="pink"
+              text
+              v-bind="attrs"
+              @click="invalid = false"
+            >
+              Закрити
+            </v-btn>
+          </template>
+        </v-snackbar>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -40,6 +57,9 @@
       name: 'PersonalAreaDialog',
       data () {
           return {
+              saveLoading: false,
+              invalid: false,
+              invalidText: '',
               states: {
                   tabs: false
               }
@@ -52,8 +72,54 @@
           state: Boolean
       },
       methods: {
+          saveChanges () {
+            this.validatePasswords()
+            if (!this.invalid) {
+              this.saveLoading = true
+              const tabData = this.$refs.tabs.getPasswords()
+              this.$store.dispatch('auth/changePassword', tabData)
+                .then((response) => {
+                  this.saveLoading = false
+                  this.$refs.tabs.cleanFields()
+                  console.log('Success ' + response)
+                  this.states.tabs = !this.states.tabs
+                  this.$emit('close')
+                })
+                .catch((error) => {
+                  this.saveLoading = false
+                  console.log(error)
+                  switch (error.status) {
+                    case 400:
+                      if (error.data === 'Wrong Password') {
+                        this.invalidText = 'Неправильний пароль :/'
+                      } else {
+                        this.invalidText = error
+                      }
+                      break
+                    case 401:
+                      this.invalidText = 'Користувач не аутентифікований :/'
+                      break
+                    case 500:
+                      this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
+                      break
+                    default:
+                      this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
+                  }
+                  this.invalid = true
+                })
+            }
+          },
+        validatePasswords () {
+          const passwordsValid = this.$refs.tabs.validatePasswords()
+
+          if (passwordsValid !== true) {
+            this.invalidText = passwordsValid
+            this.invalid = true
+          }
+        },
           closeDialog () {
               this.states.tabs = !this.states.tabs
+              this.$refs.tabs.cleanFields()
               this.$emit('close')
           }
       }

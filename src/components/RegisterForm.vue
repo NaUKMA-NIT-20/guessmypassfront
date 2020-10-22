@@ -27,7 +27,7 @@
           required
       ></v-text-field></v-row>
       <v-row><v-text-field
-          v-model="again_password"
+          v-model="passwordRepeat"
           :counter="passwordBounds.max"
           :maxlength="passwordBounds.max"
           label="Повторіть пароль"
@@ -78,7 +78,7 @@
           password: '',
           passwordHelp: '',
           showPassword: false,
-          again_password: '',
+          passwordRepeat: '',
           showAgainPassword: false,
           isLoading: false,
           invalid: false,
@@ -185,7 +185,7 @@
       },
       computed: {
           passwordMatch () {
-              return this.password === this.again_password
+              return this.password === this.passwordRepeat
           }
       }
   }

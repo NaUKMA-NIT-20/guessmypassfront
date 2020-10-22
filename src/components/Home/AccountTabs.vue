@@ -21,7 +21,7 @@
           flat
         >
           <v-card-text>
-            <change-password-area></change-password-area>
+            <change-password-area ref="passwordTab"></change-password-area>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -54,6 +54,17 @@
       },
       props: {
           updating: Boolean
+      },
+      methods: {
+         getPasswords () {
+           return this.$refs.passwordTab.passwords()
+         },
+         validatePasswords () {
+           return this.$refs.passwordTab.validatePasswords()
+         },
+         cleanFields () {
+           this.$refs.passwordTab.cleanFields()
+         }
       },
       watch: {
           updating: function (newVal, oldVal) {
