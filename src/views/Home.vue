@@ -97,12 +97,13 @@
       max-height="1000"
     >
       <v-container style="height: 200vh">
-          //
+        <personal-area-dialog :state="dialogs.states.account" @close="closeAccountDialog"></personal-area-dialog>
       </v-container>
     </v-sheet>
   </v-app>
 </template>
 <script>
+    import PersonalAreaDialog from '../components/Home/PersonalAreaDialog.vue'
   export default {
       data () {
           return {
@@ -114,15 +115,26 @@
               title: 'Ваші акаунти',
               auth_btn: {
                   items: [
-                      { title: 'Кабінет', linkName: 'my', action: '', icon: 'mdi-home' },
+                      { title: 'Кабінет', linkName: 'my', action: () => { this.dialogs.states.account = true }, icon: 'mdi-home' },
                       { title: 'Вийти', linkName: null, action: this.logout, icon: 'mdi-logout' }
                   ]
+              },
+              dialogs: {
+                  states: {
+                      account: false
+                  }
               }
           }
+      },
+      components: {
+          PersonalAreaDialog
       },
       methods: {
           logout () {
               this.$store.dispatch('auth/toLogout')
+          },
+          closeAccountDialog () {
+              this.dialogs.states.account = false
           }
       }
   }
@@ -135,4 +147,6 @@
 <style lang="sass" scoped>
   .v-list-item-icon
     margin-right: 10px
+  .password-dialog
+    color: black
 </style>

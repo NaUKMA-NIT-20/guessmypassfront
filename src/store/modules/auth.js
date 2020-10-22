@@ -3,21 +3,16 @@ import router from '../../router/index.js'
 export default {
   namespaced: true,
   state: {
-    tokenApi: localStorage.getItem('token') || null,
-    authenticated: false
+    tokenApi: localStorage.getItem('token') || null
   },
   mutations: {
     setToken (state, token) {
       localStorage.setItem('token', token)
       state.tokenApi = localStorage.getItem('token')
     },
-    setAuthenticated (state) {
-      state.authenticated = true
-    },
     resetUser (state) {
       localStorage.setItem('token', null)
       state.tokenApi = localStorage.getItem('token')
-      state.authenticated = false
     }
   },
   actions: {
@@ -44,7 +39,6 @@ export default {
         Axios.post('https://guessmypass.herokuapp.com/user/login', params).then(
           response => {
             if (response.status === 200) {
-              context.commit('setAuthenticated')
               context.commit('setToken', response.data.token)
               router.push({
                 name: 'Home'
@@ -71,7 +65,7 @@ export default {
       return state.tokenApi
     },
     isAuthenticated: state => {
-      return state.authenticated
+      return state.tokenApi !== 'null' && state.tokenApi !== null
     }
   }
 }

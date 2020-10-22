@@ -6,7 +6,8 @@ import store from '../store/index'
 Vue.use(VueRouter)
 const routes = [
   {
-    path: '/home',
+    path: '/',
+    alias: '/home',
     name: 'Home',
     component: Home,
     meta: { requiredAuth: true }
@@ -42,13 +43,7 @@ router.beforeEach((to, from, next) => {
       })
     }
   }
-  else {
-    next()
-  }
-})
-
-router.beforeEach((to, from, next) => {
-  if (to.name === 'Authentication') {
+  else if (to.name === 'Authentication') {
     if (store.getters['auth/isAuthenticated']) {
       next({
         name: 'Home'
