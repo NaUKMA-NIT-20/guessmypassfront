@@ -76,6 +76,26 @@ export default {
           reject(error.response)
         })
       })
+    },
+
+    changeNickname (context, params) {
+      const config = {
+        headers: { Authorization: context.getters.getToken }
+      }
+      return new Promise((resolve, reject) => {
+        // we have no method for updating nickname by this url but we suppose to have it in the future
+        Axios.put('https://guessmypass.herokuapp.com/user/options/nickname', params, config)
+          .then(response => {
+            if (response.status === 200) {
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
+          })
+          .catch(error => {
+          reject(error.response)
+        })
+      })
     }
   },
   getters: {
