@@ -56,11 +56,11 @@
           invalidText: '',
           isLoading: false,
           rules: {
-              password: value => {
-                  const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
-                  const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число'
-                  return value === '' ? msg : (pattern.test(value) || msg)
-              }
+            password: value => {
+              const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
+              const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число'
+              return value === '' ? msg : (pattern.test(value) || msg)
+            }
           },
           emailRegex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
           passwordBounds: { min: 8, max: 120 }
@@ -71,22 +71,38 @@
               else if (!this.emailRegex.test(email)) return 'Неправильна пошта'
               else return true
           },
-          isPasswordValid (password) {
-              if (password === '') return 'Введіть пароль'
-              else if (password.length < this.passwordBounds.min) return 'Пароль занадто короткий'
-              else return true
-          },
           async toLogin () {
               this.validateLogin()
               if (!this.invalid) {
                   this.isLoading = true
-                  await this.$store.dispatch('auth/toLogin',
+                  this.$store.dispatch('auth/toLogin',
                       { email: this.email, password: this.password })
+                    .then((user) => {
+                      this.isLoading = false
+                      console.log(user)
+                    })
+                    .catch((error) => {
+                      this.isLoading = false
+                      switch (error.status) {
+                        case 400:
+                          this.invalidText = 'Неправильний запит:/'
+                          break
+                        case 404:
+                          this.invalidText = 'Користувача не знайдено:/'
+                          break
+                        case 500:
+                          this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
+                          break
+                        default:
+                          this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
+                      }
+                      this.invalid = true
+                    })
               }
           },
           validateLogin () {
               const emailValid = this.isEmailValid(this.email)
-              const passValid = this.isPasswordValid(this.password)
+              const passValid = this.rules.password(this.password)
               if (emailValid !== true) {
                   this.invalidText = emailValid
                   this.invalid = true
