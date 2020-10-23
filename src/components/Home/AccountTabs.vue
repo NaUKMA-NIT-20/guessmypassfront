@@ -73,10 +73,8 @@ export default {
     },
     cleanFields () {
       this.$refs.passwordTab.cleanFields()
-      this.$refs.passwordTab.$forceUpdate()
       if (this.$refs.nicknameTab !== undefined) {
         this.$refs.nicknameTab.cleanFields()
-        this.$refs.nicknameTab.$forceUpdate()
       }
     },
     getNickname () {

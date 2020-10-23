@@ -32,17 +32,14 @@
           Зберегти
         </v-btn>
         <v-snackbar
-          v-model="invalid"
-        >
+          v-model="invalid">
           {{ invalidText }}
-
           <template v-slot:action="{ attrs }">
             <v-btn
               color="pink"
               text
               v-bind="attrs"
-              @click="invalid = false"
-            >
+              @click="invalid = false">
               Закрити
             </v-btn>
           </template>
@@ -85,7 +82,7 @@ export default {
               this.$refs.tabs.cleanFields()
               console.log('Success ' + response)
               this.states.tabs = !this.states.tabs
-              this.$emit('close')
+              this.$emit('updatedPassword')
             })
             .catch((error) => {
               this.saveLoading = false
@@ -110,36 +107,35 @@ export default {
               this.invalid = true
             })
         }
-      }
-      else {
-          this.saveLoading = true
-          const tabData = this.$refs.tabs.getNickname()
-          this.$store.dispatch('auth/changeNickname', tabData)
-            .then((response) => {
-              this.saveLoading = false
-              this.$refs.tabs.cleanFields()
-              console.log('Success ' + response)
-              this.states.tabs = !this.states.tabs
-              this.$emit('close')
-            })
-            .catch((error) => {
-              this.saveLoading = false
-              console.log(error)
-              switch (error.status) {
-                case 401:
-                  this.invalidText = 'Користувач не аутентифікований :/'
-                      break
-                case 404:
-                  this.invalidText = 'Ця фукнція не підтримується:/'
-                  break
-                case 500:
-                  this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
-                  break
-                default:
-                  this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
-              }
-              this.invalid = true
-            })
+      } else {
+        this.saveLoading = true
+        const tabData = this.$refs.tabs.getNickname()
+        this.$store.dispatch('auth/changeNickname', tabData)
+          .then((response) => {
+            this.saveLoading = false
+            this.$refs.tabs.cleanFields()
+            console.log('Success ' + response)
+            this.states.tabs = !this.states.tabs
+            this.$emit('updatedNickname')
+          })
+          .catch((error) => {
+            this.saveLoading = false
+            console.log(error)
+            switch (error.status) {
+              case 401:
+                this.invalidText = 'Користувач не аутентифікований :/'
+                break
+              case 404:
+                this.invalidText = 'Ця фукнція не підтримується:/'
+                break
+              case 500:
+                this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
+                break
+              default:
+                this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
+            }
+            this.invalid = true
+          })
       }
     },
     validatePasswords () {
