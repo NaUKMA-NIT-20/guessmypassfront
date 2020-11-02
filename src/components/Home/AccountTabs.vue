@@ -10,7 +10,7 @@
         Зміна паролю
       </v-tab>
       <v-tab
-        @click="setActiveNicknameTab">
+        @click="setActiveUsernameTab">
         Зміна нікнейму
       </v-tab>
     </v-tabs>
@@ -34,7 +34,7 @@
           flat
         >
           <v-card-text>
-            <change-nickname-area ref="nicknameTab"></change-nickname-area>
+            <change-username-area ref="usernameTab"></change-username-area>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -43,13 +43,13 @@
 </template>
 <script>
 import ChangePasswordArea from './AccountTabs/ChangePasswordArea'
-import ChangeNicknameArea from './AccountTabs/ChangeNicknameArea'
+import ChangeUsernameArea from './AccountTabs/ChangeUsernameArea'
 
 export default {
   name: 'AccountTabs',
   components: {
     ChangePasswordArea,
-    ChangeNicknameArea
+    ChangeUsernameArea
   },
   data () {
     return {
@@ -71,17 +71,20 @@ export default {
     validatePasswords () {
       return this.$refs.passwordTab.validatePasswords()
     },
+    validateUsernames () {
+      return this.$refs.usernameTab.validateUsernames()
+    },
     cleanFields () {
       this.$refs.passwordTab.cleanFields()
-      if (this.$refs.nicknameTab !== undefined) {
-        this.$refs.nicknameTab.cleanFields()
+      if (this.$refs.usernameTab !== undefined) {
+        this.$refs.usernameTab.cleanFields()
       }
     },
-    getNickname () {
-      this.$refs.nicknameTab.getNickname()
+    getUsernames () {
+      return this.$refs.usernameTab.usernames()
     },
-    isNicknameTabActive () {
-      return this.$refs.nicknameTab.isActive()
+    isUsernameTabActive () {
+      return this.$refs.usernameTab.isActive()
     },
     isPasswordTabActive () {
       return this.activePasswordTab
@@ -89,7 +92,7 @@ export default {
     setActivePasswordTab () {
       this.activePasswordTab = true
     },
-    setActiveNicknameTab () {
+    setActiveUsernameTab () {
       this.activePasswordTab = false
     }
   },

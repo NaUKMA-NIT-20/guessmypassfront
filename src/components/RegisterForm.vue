@@ -106,7 +106,7 @@ export default {
       min: 8,
       max: 120
     },
-    nicknameBounds: {
+    usernameBounds: {
       min: 3,
       max: 14
     },
@@ -128,9 +128,9 @@ export default {
     isUsernameValid (username) {
       if (username === '') {
         return true
-      } else if (username.length < this.nicknameBounds.min) {
+      } else if (username.length < this.usernameBounds.min) {
         return 'Нікнейм занадто короткий'
-      } else if (username.length > this.nicknameBounds.max) {
+      } else if (username.length > this.usernameBounds.max) {
         return 'Нікнейм занадто довгий'
       } else {
         return true

@@ -1,5 +1,6 @@
 import Axios from 'axios'
 import router from '../../router/index.js'
+
 export default {
   namespaced: true,
   state: {
@@ -30,7 +31,7 @@ export default {
               reject(response)
             }
           }).catch(error => {
-             reject(error.response)
+          reject(error.response)
         })
       })
     },
@@ -73,18 +74,17 @@ export default {
             }
           })
           .catch(error => {
-          reject(error.response)
-        })
+            reject(error.response)
+          })
       })
     },
 
-    changeNickname (context, params) {
+    changeUsername (context, params) {
       const config = {
         headers: { Authorization: context.getters.getToken }
       }
       return new Promise((resolve, reject) => {
-        // we have no method for updating nickname by this url but we suppose to have it in the future
-        Axios.put('https://guessmypass.herokuapp.com/user/options/nickname', params, config)
+        Axios.put('https://guessmypass.herokuapp.com/user/options/username', params, config)
           .then(response => {
             if (response.status === 200) {
               resolve(response.data)
@@ -93,8 +93,8 @@ export default {
             }
           })
           .catch(error => {
-          reject(error.response)
-        })
+            reject(error.response)
+          })
       })
     }
   },
