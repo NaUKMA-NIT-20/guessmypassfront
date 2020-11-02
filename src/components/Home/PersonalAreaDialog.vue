@@ -83,17 +83,14 @@ export default {
               console.log('Success ' + response)
               this.states.tabs = !this.states.tabs
               this.$emit('updatedPassword')
+              this.$store.dispatch('auth/toLogout')
             })
             .catch((error) => {
               this.saveLoading = false
               console.log(error)
               switch (error.status) {
                 case 400:
-                  if (error.data === 'Wrong Password') {
-                    this.invalidText = 'Неправильний пароль :/'
-                  } else {
-                    this.invalidText = error
-                  }
+                  this.invalidText = 'Неправильний пароль :/'
                   break
                 case 401:
                   this.invalidText = 'Користувач не аутентифікований :/'

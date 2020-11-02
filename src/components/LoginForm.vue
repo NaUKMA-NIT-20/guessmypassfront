@@ -99,7 +99,7 @@ export default {
             this.isLoading = false
             switch (error.status) {
               case 400:
-                this.invalidText = 'Неправильний запит:/'
+                this.invalidText = 'Неправильний логін або пароль:/'
                 break
               case 404:
                 this.invalidText = 'Користувача не знайдено:/'
