@@ -7,51 +7,103 @@ export default {
   },
   mutations: {
     setToken (state, token) {
-     localStorage.setItem('token', token)
-     state.tokenApi = localStorage.getItem('token')
+      localStorage.setItem('token', token)
+      state.tokenApi = localStorage.getItem('token')
+    },
+    resetUser (state) {
+      localStorage.setItem('token', null)
+      state.tokenApi = localStorage.getItem('token')
     }
   },
   actions: {
-    async toRegister (context, params) {
-      Axios.post('https://guessmypass.herokuapp.com/user/register', params).then(
-        response => {
-          if (response.status === 200) {
-            if (response.data !== 'Wrong request. User already exists') {
-              context.dispatch('toLogin', { email: params.email, hashedPassword: params.hashedPassword })
+    toRegister (context, params) {
+      return new Promise((resolve, reject) => {
+        Axios.post('https://guessmypass.herokuapp.com/user/register', params).then(
+          response => {
+            if (response.status === 200) {
+              if (response.data !== 'Wrong request. User already exists') {
+                resolve(response.data)
+              } else {
+                reject(response)
+              }
+            } else {
+              reject(response)
             }
-            else {
-              console.log(response.data)
-              return response.data
-            }
-          }
-          else {
-            console.log(response.status)
-          }
-      }).catch(error => {
-        console.log(error)
+          }).catch(error => {
+             reject(error.response)
+        })
       })
     },
-    async toLogin (context, params) {
-      Axios.post('https://guessmypass.herokuapp.com/user/login', params).then(
-        response => {
-          if (response.status === 200) {
-            context.commit('setToken', response.data.dbId.timestamp)
-            router.push('/')
+    toLogin (context, params) {
+      return new Promise((resolve, reject) => {
+        Axios.post('https://guessmypass.herokuapp.com/user/login', params).then(
+          response => {
+            if (response.status === 200) {
+              context.commit('setToken', response.data.token)
+              router.push({
+                name: 'Home'
+              })
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
           }
-          else {
-            console.log(response.status)
-          }
-        }
-      ).catch(error => {
-        console.log(error)
+        ).catch(error => {
+          reject(error.response)
+        })
+      })
+    },
+    toLogout (context) {
+      context.commit('resetUser')
+      router.push({
+        name: 'Authentication'
+      })
+    },
+    changePassword (context, params) {
+      const config = {
+        headers: { Authorization: context.getters.getToken }
+      }
+      return new Promise((resolve, reject) => {
+        Axios.put('https://guessmypass.herokuapp.com/user/options/password', params, config)
+          .then(response => {
+            if (response.status === 200) {
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
+          })
+          .catch(error => {
+          reject(error.response)
+        })
+      })
+    },
+
+    changeNickname (context, params) {
+      const config = {
+        headers: { Authorization: context.getters.getToken }
+      }
+      return new Promise((resolve, reject) => {
+        // we have no method for updating nickname by this url but we suppose to have it in the future
+        Axios.put('https://guessmypass.herokuapp.com/user/options/nickname', params, config)
+          .then(response => {
+            if (response.status === 200) {
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
+          })
+          .catch(error => {
+          reject(error.response)
+        })
       })
     }
-
   },
   getters: {
     getToken: state => {
       return state.tokenApi
+    },
+    isAuthenticated: state => {
+      return state.tokenApi !== 'null' && state.tokenApi !== null
     }
   }
-
 }

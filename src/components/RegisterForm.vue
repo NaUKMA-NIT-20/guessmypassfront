@@ -1,14 +1,13 @@
 <template>
   <v-form class="register">
     <v-container>
-      <v-row>
-        <v-text-field
+      <v-row><v-text-field
           v-model="email"
           type="email"
           :rules="[email => isEmailValid(email)]"
           label="Ваш імейл"
           required
-        ></v-text-field></v-row>
+      ></v-text-field></v-row>
       <v-row><v-text-field
           v-model="nickname"
           type="text"
@@ -28,7 +27,7 @@
           required
       ></v-text-field></v-row>
       <v-row><v-text-field
-          v-model="again_password"
+          v-model="passwordRepeat"
           :counter="passwordBounds.max"
           :maxlength="passwordBounds.max"
           label="Повторіть пароль"
@@ -37,10 +36,19 @@
           @click:append="() => (showAgainPassword = !showAgainPassword)"
           :type="showAgainPassword ? 'text' : 'password'"
           required
-        ></v-text-field>
-      </v-row>
+      ></v-text-field></v-row>
+      <v-row><v-text-field
+        v-model="passwordHelp"
+        type="text"
+        :rules="[hint => isPasswordHelpValid(hint)]"
+        label="Підказка до паролю"
+        required
+      ></v-text-field></v-row>
       <v-row>
-        <v-btn @click="toRegister">Зареєструватися</v-btn>
+        <v-btn
+          @click="toRegister"
+          :loading="isLoading"
+        >Зареєструватися</v-btn>
       </v-row>
       <v-snackbar
         v-model="invalid"
@@ -68,9 +76,11 @@
           email: '',
           nickname: '',
           password: '',
+          passwordHelp: '',
           showPassword: false,
-          again_password: '',
+          passwordRepeat: '',
           showAgainPassword: false,
+          isLoading: false,
           invalid: false,
           invalidText: '',
           rules: {
@@ -82,17 +92,13 @@
           },
           emailRegex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
           passwordBounds: { min: 8, max: 120 },
-          nicknameBounds: { min: 3, max: 14 }
+          nicknameBounds: { min: 3, max: 14 },
+          passwordHelpBounds: { min: 3, max: 120 }
       }),
       methods: {
           isEmailValid (email) {
               if (email === '') return 'Введіть пошту'
               else if (!this.emailRegex.test(email)) return 'Неправильна пошта'
-              else return true
-          },
-          isPasswordValid (password) {
-              if (password === '') return 'Введіть пароль'
-              else if (password.length < this.passwordBounds.min) return 'Пароль занадто короткий'
               else return true
           },
           isNicknameValid (nickname) {
@@ -101,15 +107,52 @@
               else if (nickname.length > this.nicknameBounds.max) return 'Нікнейм занадто довгий'
               else return true
           },
+          isPasswordHelpValid (hint) {
+            if (hint === '') return 'Введіть підказку'
+            else if (hint.length < this.passwordHelpBounds.min) return 'Підказка занадто коротка'
+            else if (hint.length > this.passwordHelpBounds.max) return 'Підказка занадто довга'
+            else return true
+          },
           changeState () {
               if (this.state === 0) this.state = 1
               else if (this.state === 1) this.state = 0
           },
           async toRegister () {
               this.validateRegister()
-              if (this.passwordMatch && !this.invalid) {
-                  await this.$store.dispatch('auth/toRegister',
-                      { email: this.email, hashedPassword: this.password, username: this.nickname, passwordHelp: 'something' })
+              if (!this.invalid) {
+                this.isLoading = true
+                this.$store.dispatch('auth/toRegister',
+                      { email: this.email, password: this.password, passwordHelp: this.passwordHelp, username: this.nickname })
+                  .then((createdUser) => {
+                    console.log('Succesfully registered.\nTrying to Login')
+                    return this.$store.dispatch('auth/toLogin',
+                      { email: this.email, password: this.password })
+                  })
+                  .then((user) => {
+                      this.isLoading = false
+                      console.log(user)
+                   })
+                  .catch((error) => {
+                    this.isLoading = false
+                    switch (error.status) {
+                      case 400:
+                        if (error.data === 'Wrong request. User already exists') {
+                          this.invalidText = 'Такий користувач вже існує :/'
+                        } else {
+                          this.invalidText = 'Порожній запит :/'
+                        }
+                        break
+                      case 404:
+                        this.invalidText = 'Користувача створено, проте трапилась помилка при логіні. Спробуйте увійти трохи пізніше :/'
+                        break
+                      case 500:
+                        this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
+                        break
+                      default:
+                        this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
+                    }
+                    this.invalid = true
+                  })
               }
           },
           validateRegister () {
@@ -117,6 +160,7 @@
               const nicknameValid = this.isNicknameValid(this.nickname)
               const passValid = this.rules.password(this.password)
               const againPassValid = this.passwordMatch
+              const passwordHelpValid = this.isPasswordHelpValid(this.passwordHelp)
               if (emailValid !== true) {
                   this.invalidText = emailValid
                   this.invalid = true
@@ -133,14 +177,15 @@
                   this.invalidText = 'Паролі не співпадають'
                   this.invalid = true
               }
-              else {
-                  alert('Акаунт створено.\nВаша пошта: ' + this.email + '\nВаш нікнейм: ' + this.nickname + '\nВаш пароль: ' + this.password + '.')
+              else if (passwordHelpValid !== true) {
+                this.invalidText = passwordHelpValid
+                this.invalid = true
               }
           }
       },
       computed: {
           passwordMatch () {
-              return this.password === this.again_password
+              return this.password === this.passwordRepeat
           }
       }
   }
