@@ -100,7 +100,7 @@
         <personal-area-dialog :state="dialogs.states.account"
                               @close="closeAccountDialog"
                               @updatedPassword = "updatedPassword"
-                              @updatedNickname = "updatedNickname">
+                              @updatedUsername = "updatedUsername">
         </personal-area-dialog>
       </v-container>
       <v-snackbar
@@ -120,7 +120,7 @@
   </v-app>
 </template>
 <script>
-import PersonalAreaDialog from '../components/Home/PersonalAreaDialog.vue'
+import PersonalAreaDialog from '../components/Home/Account/PersonalAreaDialog.vue'
 
 export default {
   data () {
@@ -179,7 +179,7 @@ export default {
       this.dialogs.states.updatedData = true
       this.dialogs.states.updateText = 'Пароль був успішно оновлений'
     },
-    updatedNickname () {
+    updatedUsername () {
       this.dialogs.states.account = false
       this.dialogs.states.updatedData = true
       this.dialogs.states.updateText = 'Нікнейм був успішно оновлений'

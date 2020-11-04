@@ -83,17 +83,14 @@ export default {
               console.log('Success ' + response)
               this.states.tabs = !this.states.tabs
               this.$emit('updatedPassword')
+              this.$store.dispatch('auth/toLogout')
             })
             .catch((error) => {
               this.saveLoading = false
               console.log(error)
               switch (error.status) {
                 case 400:
-                  if (error.data === 'Wrong Password') {
-                    this.invalidText = 'Неправильний пароль :/'
-                  } else {
-                    this.invalidText = error
-                  }
+                  this.invalidText = 'Неправильний пароль :/'
                   break
                 case 401:
                   this.invalidText = 'Користувач не аутентифікований :/'
@@ -108,41 +105,53 @@ export default {
             })
         }
       } else {
-        this.saveLoading = true
-        const tabData = this.$refs.tabs.getNickname()
-        this.$store.dispatch('auth/changeNickname', tabData)
-          .then((response) => {
-            this.saveLoading = false
-            this.$refs.tabs.cleanFields()
-            console.log('Success ' + response)
-            this.states.tabs = !this.states.tabs
-            this.$emit('updatedNickname')
-          })
-          .catch((error) => {
-            this.saveLoading = false
-            console.log(error)
-            switch (error.status) {
-              case 401:
-                this.invalidText = 'Користувач не аутентифікований :/'
-                break
-              case 404:
-                this.invalidText = 'Ця фукнція не підтримується:/'
-                break
-              case 500:
-                this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
-                break
-              default:
-                this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
-            }
-            this.invalid = true
-          })
+        this.validateUsernames()
+        if (!this.invalid) {
+          this.saveLoading = true
+          const tabData = this.$refs.tabs.getUsernames()
+          this.$store.dispatch('auth/changeUsername', tabData)
+            .then((response) => {
+              this.saveLoading = false
+              this.$refs.tabs.cleanFields()
+              console.log('Success ' + response)
+              this.states.tabs = !this.states.tabs
+              this.$emit('updatedUsername')
+            })
+            .catch((error) => {
+              this.saveLoading = false
+              console.log(error)
+              switch (error.status) {
+                case 400:
+                  this.invalidText = 'Неправильний старий нік'
+                  break
+                case 401:
+                  this.invalidText = 'Користувач не аутентифікований :/'
+                  break
+                case 409:
+                  this.invalidText = 'Користувач з таким ніком вже існує:/'
+                  break
+                case 500:
+                  this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
+                  break
+                default:
+                  this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
+              }
+              this.invalid = true
+            })
+        }
       }
     },
     validatePasswords () {
       const passwordsValid = this.$refs.tabs.validatePasswords()
-
       if (passwordsValid !== true) {
         this.invalidText = passwordsValid
+        this.invalid = true
+      }
+    },
+    validateUsernames () {
+      const usernamesValid = this.$refs.tabs.validateUsernames()
+      if (usernamesValid !== true) {
+        this.invalidText = usernamesValid
         this.invalid = true
       }
     },
@@ -155,7 +164,7 @@ export default {
 }
 </script>
 <style lang="sass" scoped>
-@import "../../../src/assets/sass/assets/variables/colors"
+@import "../../../assets/sass/assets/variables/colors"
 .v-text-field .v-counter
   color: $azure !important
 
