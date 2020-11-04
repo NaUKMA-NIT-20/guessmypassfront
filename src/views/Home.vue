@@ -204,5 +204,6 @@ html
 .container
   margin-top: 10rem
   margin-bottom: 5rem
-
+.v-sheet
+  overflow-x: hidden
 </style>
