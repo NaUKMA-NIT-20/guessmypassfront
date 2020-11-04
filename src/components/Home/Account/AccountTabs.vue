@@ -42,8 +42,8 @@
   </v-card>
 </template>
 <script>
-import ChangePasswordArea from './AccountTabs/ChangePasswordArea'
-import ChangeUsernameArea from './AccountTabs/ChangeUsernameArea'
+import ChangePasswordArea from './AccountTabs/ChangePasswordArea.vue'
+import ChangeUsernameArea from './AccountTabs/ChangeUsernameArea.vue'
 
 export default {
   name: 'AccountTabs',

@@ -120,7 +120,7 @@
   </v-app>
 </template>
 <script>
-import PersonalAreaDialog from '../components/Home/PersonalAreaDialog.vue'
+import PersonalAreaDialog from '../components/Home/Account/PersonalAreaDialog.vue'
 
 export default {
   data () {

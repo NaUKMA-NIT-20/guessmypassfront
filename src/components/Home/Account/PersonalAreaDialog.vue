@@ -164,7 +164,7 @@ export default {
 }
 </script>
 <style lang="sass" scoped>
-@import "../../../src/assets/sass/assets/variables/colors"
+@import "../../../assets/sass/assets/variables/colors"
 .v-text-field .v-counter
   color: $azure !important
 
