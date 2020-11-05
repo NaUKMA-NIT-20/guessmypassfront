@@ -123,26 +123,31 @@
             this.states.dialogs.edit = true
           },
           async deleteCard (id) {
-            this.$store.dispatch('cards/deleteCard', id)
-              .then((response) => {
-                const updatedCards = this.getCards()
-                this.cards = this.renderCards(updatedCards)
-              })
-              .catch((error) => {
-                if (error.status === 400) {
-                  this.invalidText = 'Картки з таким id не існує :/'
-                  this.invalid = true
-                }
-                else if (error.status === 401) {
-                  this.invalidText = 'Користувач не аутентифікований :/'
-                  this.invalid = true
-                  this.$store.dispatch('auth/toLogout')
-                }
-                else if (error.status === 500) {
-                  this.invalidText = 'Помилка сервера'
-                  this.invalid = true
-                }
-              })
+            const res = await this.$confirm('Ви дійсно хочете видалити картку ?', {
+              title: 'Підтвердження',
+              color: 'red',
+              icon: 'mdi-trash-can'
+            })
+            if (res) {
+              this.$store.dispatch('cards/deleteCard', id)
+                .then((response) => {
+                  const updatedCards = this.getCards()
+                  this.cards = this.renderCards(updatedCards)
+                })
+                .catch((error) => {
+                  if (error.status === 400) {
+                    this.invalidText = 'Картки з таким id не існує :/'
+                    this.invalid = true
+                  } else if (error.status === 401) {
+                    this.invalidText = 'Користувач не аутентифікований :/'
+                    this.invalid = true
+                    this.$store.dispatch('auth/toLogout')
+                  } else if (error.status === 500) {
+                    this.invalidText = 'Помилка сервера'
+                    this.invalid = true
+                  }
+                })
+            }
           },
           async getCards () {
               this.$store.dispatch('cards/getCards')
