@@ -49,7 +49,43 @@ export default {
             reject(error.response)
           })
       })
+      },
+    updateCard (context, params) {
+      const config = {
+        headers: { Authorization: context.rootState.auth.tokenApi }
       }
+      return new Promise((resolve, reject) => {
+        Axios.put('https://guessmypass.herokuapp.com/data', params, config)
+          .then(response => {
+            if (response.status === 200) {
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
+    },
+    deleteCard (context, id) {
+      const config = {
+        headers: { Authorization: context.rootState.auth.tokenApi }
+      }
+      return new Promise((resolve, reject) => {
+        Axios.delete(`https://guessmypass.herokuapp.com/data/${id}`, config)
+          .then(response => {
+            if (response.status === 200) {
+              resolve(response.data)
+            } else {
+              reject(response)
+            }
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
+    }
     },
   getters: {
     getCards (state) {

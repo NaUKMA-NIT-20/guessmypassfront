@@ -30,14 +30,31 @@
           <v-card-title v-text="card.title"></v-card-title>
         </v-img>
         <v-card-actions>
-          <!--<v-spacer></v-spacer>
-          <v-btn icon>
-            <v-icon>mdi-bookmark</v-icon>
+          <v-spacer></v-spacer>
+
+          <v-btn icon
+                 @click="editCard(card)"
+          >
+            <v-icon>
+              mdi-wrench
+            </v-icon>
           </v-btn>
 
           <v-btn icon>
-            <v-icon>mdi-trash-can</v-icon>
-          </v-btn> !-->
+            <v-icon>
+              mdi-bookmark
+            </v-icon>
+          </v-btn>
+
+          <v-btn icon
+                 color="red"
+                 @click="deleteCard(card.id)"
+          >
+            <v-icon>
+              mdi-trash-can
+            </v-icon>
+          </v-btn>
+
         </v-card-actions>
       </v-card>
     </v-col>
@@ -57,17 +74,27 @@
         </v-btn>
       </template>
     </v-snackbar>
+
     <add-card
       :state="states.dialogs.add"
       @close="closeAddDialog"
       @onSave="getCards"
     ></add-card>
+
+    <edit-card
+      ref="edit_card"
+      :state="states.dialogs.edit"
+      @close="closeEditDialog"
+      @onSave="getCards"
+    ></edit-card>
+
   </v-row>
 
 </template>
 
 <script>
   import AddCard from './Dialogs/AddCard'
+  import EditCard from './Dialogs/EditCard'
 
   export default {
       data () {
@@ -77,15 +104,41 @@
               cards: [],
               states: {
                   dialogs: {
-                      add: false
+                      add: false,
+                      edit: false
                   }
               }
           }
       },
       components: {
-        AddCard
+        AddCard,
+        EditCard
       },
       methods: {
+          editCard (cardSelected) {
+            const cardList = this.$store.state.cards
+            const card = cardList.cards.find(it => it.id === cardSelected.id)
+
+            this.$refs.edit_card.startEditingCard(card)
+            this.states.dialogs.edit = true
+          },
+          async deleteCard (id) {
+            this.$store.dispatch('cards/deleteCard', id)
+              .then((response) => {
+                const updatedCards = this.getCards()
+                this.cards = this.renderCards(updatedCards)
+              })
+              .catch((error) => {
+                if (error.status === 400) {
+                  this.invalidText = 'Картки з таким id не існує :/'
+                  this.invalid = true
+                }
+                else if (error.status === 500) {
+                  this.invalidText = 'Помилка сервера'
+                  this.invalid = true
+                }
+              })
+          },
           async getCards () {
               this.$store.dispatch('cards/getCards')
                   .then((cards) => {
@@ -115,6 +168,9 @@
           },
           closeAddDialog () {
               this.states.dialogs.add = false
+          },
+          closeEditDialog () {
+              this.states.dialogs.edit = false
           }
       },
       beforeMount () {

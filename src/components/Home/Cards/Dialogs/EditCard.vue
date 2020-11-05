@@ -18,15 +18,15 @@
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
-          <v-toolbar-title>Додати картку</v-toolbar-title>
+          <v-toolbar-title>Редагувати картку</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
             <v-btn
               dark
               text
-              @click="saveCard"
+              @click="saveEditedCard"
             >
-              Зберегти
+              Зберегти зміни
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
@@ -144,13 +144,14 @@
       data () {
           return {
               data: {
-                  card: '',
+                  card: '', // this.props.cardToEdit,
                   cvv: '',
                   name: '',
                   url: '',
                   notes: '',
                   cardholder: ''
               },
+              cardToEdit: null,
               nameMaxBound: 20,
               cardMask: '#### #### #### ####',
               cvvMask: '###',
@@ -203,7 +204,17 @@
                   else return true
               } else return true
           },
-          saveCard () {
+          startEditingCard (cardToEdit) {
+            this.cardToEdit = cardToEdit
+            this.data.card = cardToEdit.number
+            this.data.name = cardToEdit.name
+            this.data.url = cardToEdit.url
+            this.data.cardholder = cardToEdit.cardholderName
+            this.data.cvv = cardToEdit.cvv
+            this.data.notes = cardToEdit.notes
+            console.log(this.cardToEdit)
+          },
+          saveEditedCard () {
               const name = this.data.name
               const card = this.data.card
               const url = this.data.url
@@ -214,13 +225,14 @@
                   this.validateUrl(url) &&
                   this.validateCardholder(cardholder) &&
                   this.validateCVV(cvv)) {
-                  this.$store.dispatch('cards/addCard', {
-                      name: this.data.name,
-                      url: this.data.url,
+                  this.$store.dispatch('cards/updateCard', {
+                      id: this.cardToEdit.id,
+                      name: name,
+                      url: url,
                       notes: this.data.notes,
-                      cardholderName: this.data.cardholder,
-                      number: this.data.card === undefined ? undefined : this.data.card.replace(/\s/g, ''),
-                      cvv: this.data.cvv
+                      cardholderName: cardholder,
+                      number: card.replace(/\s/g, ''),
+                      cvv: cvv
                   }).then((card) => {
                       this.$emit('onSave')
                       this.closeDialog()
