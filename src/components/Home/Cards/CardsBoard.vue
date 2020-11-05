@@ -133,6 +133,11 @@
                   this.invalidText = 'Картки з таким id не існує :/'
                   this.invalid = true
                 }
+                else if (error.status === 401) {
+                  this.invalidText = 'Користувач не аутентифікований :/'
+                  this.invalid = true
+                  this.$store.dispatch('auth/toLogout')
+                }
                 else if (error.status === 500) {
                   this.invalidText = 'Помилка сервера'
                   this.invalid = true
@@ -145,10 +150,15 @@
                       this.cards = this.renderCards(cards)
                   })
                   .catch((error) => {
-                      if (error.status === 500) {
-                          this.invalidText = 'Помилка сервера'
-                          this.invalid = true
-                      }
+                    if (error.status === 401) {
+                      this.invalidText = 'Користувач не аутентифікований :/'
+                      this.invalid = true
+                      this.$store.dispatch('auth/toLogout')
+                    }
+                    else if (error.status === 500) {
+                      this.invalidText = 'Помилка сервера'
+                      this.invalid = true
+                    }
                   })
           },
           renderCards (cards) {
