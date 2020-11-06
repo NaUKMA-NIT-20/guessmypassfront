@@ -1,19 +1,30 @@
 <template>
   <v-row>
-    <v-btn
-      key="mdi-plus"
-      color="success"
-      @click="states.dialogs.add = true"
-      fab
-      large
-      dark
-      bottom
-      left
-      class="v-btn--add"
-    >
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
-    <v-col
+
+    <v-container v-if="loadingCards" style="height: 400px;">
+      <v-row
+        class="fill-height"
+        align-content="center"
+        justify="center"
+      >
+        <v-col
+          class="subtitle-1 text-center"
+          cols="12"
+        >
+          Картки завантажуються...
+        </v-col>
+        <v-col cols="6">
+          <v-progress-linear
+            color="deep-purple accent-4"
+            indeterminate
+            rounded
+            height="6"
+          ></v-progress-linear>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <v-col v-else
       v-for="card in cards"
       :key="card.id"
       :cols="card.mobile"
@@ -58,6 +69,21 @@
         </v-card-actions>
       </v-card>
     </v-col>
+
+    <v-btn
+      key="mdi-plus"
+      color="success"
+      @click="states.dialogs.add = true"
+      fab
+      large
+      dark
+      bottom
+      left
+      class="v-btn--add"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
+
     <v-snackbar
       v-model="invalid"
     >
@@ -99,6 +125,7 @@
   export default {
       data () {
           return {
+              loadingCards: true,
               invalid: false,
               invalidText: '',
               cards: [],
@@ -150,11 +177,14 @@
             }
           },
           async getCards () {
+              this.loadingCards = true
               this.$store.dispatch('cards/getCards')
                   .then((cards) => {
+                      this.loadingCards = false
                       this.cards = this.renderCards(cards)
                   })
                   .catch((error) => {
+                    this.loadingCards = false
                     if (error.status === 401) {
                       this.invalidText = 'Користувач не аутентифікований :/'
                       this.invalid = true
