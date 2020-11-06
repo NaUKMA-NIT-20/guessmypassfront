@@ -1,9 +1,10 @@
 <template>
   <v-dialog
-    :retain-focus="false"
-    v-model="state"
-    persistent
+    v-model="dialogState"
     max-width="600px"
+    transition="scroll-y-transition"
+    :no-click-animation="true"
+    :persistent="true"
   >
     <v-card>
       <v-card-title>
@@ -68,6 +69,11 @@ export default {
   },
   props: {
     state: Boolean
+  },
+  computed: {
+    dialogState () {
+        return this.state
+    }
   },
   methods: {
     saveChanges () {
@@ -163,7 +169,7 @@ export default {
   }
 }
 </script>
-<style lang="sass" scoped>
+<style lang="sass">
 @import "../../../assets/sass/assets/variables/colors"
 .v-text-field .v-counter
   color: $azure !important
@@ -176,4 +182,6 @@ export default {
   background-color: $azure !important
   width: 100%
   color: white
+.v-dialog:not(.v-dialog--active), .v-dialog.scroll-y-transition-enter-active
+  overflow: hidden!important
 </style>
