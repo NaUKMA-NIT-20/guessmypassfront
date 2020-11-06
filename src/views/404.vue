@@ -38,5 +38,5 @@
     text-decoration: none
     color: orange
   .v-card-title
-  
+
 </style>

@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center">
     <v-dialog
-      v-model="state"
+      v-model="cardState"
       fullscreen
       hide-overlay
       transition="dialog-bottom-transition"
@@ -177,6 +177,11 @@
               urlRegex:
                   '^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&\'\\(\\)\\*\\+,;=.]+$',
               invalid: false
+          }
+      },
+      computed: {
+          cardState () {
+              return this.state
           }
       },
       props: {
