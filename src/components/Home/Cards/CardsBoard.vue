@@ -31,7 +31,7 @@
       :xs="card.mobile"
       :md="card.flex"
     >
-      <v-card link>
+      <v-card>
         <v-img
           :src="card.src"
           class="white--text align-end"
