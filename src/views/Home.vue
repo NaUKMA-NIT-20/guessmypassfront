@@ -48,7 +48,7 @@
         ></v-img>
       </template>
 
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <!--<v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon> !-->
 
       <v-toolbar-title>{{ title }}</v-toolbar-title>
 
@@ -94,14 +94,16 @@
     <v-sheet
       id="scrolling-techniques-2"
       class="overflow-y-auto"
-      max-height="1000"
+      max-height="100vh"
     >
-      <v-container style="height: 200vh">
+      <v-container>
         <personal-area-dialog :state="dialogs.states.account"
                               @close="closeAccountDialog"
                               @updatedPassword = "updatedPassword"
-                              @updatedNickname = "updatedNickname">
+                              @updatedUsername = "updatedUsername">
         </personal-area-dialog>
+        <cards-board></cards-board>
+
       </v-container>
       <v-snackbar
         v-model="dialogs.states.updatedData">
@@ -120,8 +122,8 @@
   </v-app>
 </template>
 <script>
-import PersonalAreaDialog from '../components/Home/PersonalAreaDialog.vue'
-
+import PersonalAreaDialog from '../components/Home/Account/PersonalAreaDialog.vue'
+import CardsBoard from '../components/Home/Cards/CardsBoard'
 export default {
   data () {
     return {
@@ -165,7 +167,8 @@ export default {
     }
   },
   components: {
-    PersonalAreaDialog
+    PersonalAreaDialog,
+      CardsBoard
   },
   methods: {
     logout () {
@@ -179,7 +182,7 @@ export default {
       this.dialogs.states.updatedData = true
       this.dialogs.states.updateText = 'Пароль був успішно оновлений'
     },
-    updatedNickname () {
+    updatedUsername () {
       this.dialogs.states.account = false
       this.dialogs.states.updatedData = true
       this.dialogs.states.updateText = 'Нікнейм був успішно оновлений'
@@ -198,4 +201,9 @@ html
 
 .password-dialog
   color: black
+.container
+  margin-top: 10rem
+  margin-bottom: 5rem
+.v-sheet
+  overflow-x: hidden
 </style>
