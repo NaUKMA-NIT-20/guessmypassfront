@@ -7,10 +7,16 @@
       grow
     >
       <v-tab @click="setActivePasswordTab">
+        <v-icon left>
+          mdi-lock
+        </v-icon>
         Зміна паролю
       </v-tab>
       <v-tab
         @click="setActiveUsernameTab">
+        <v-icon left>
+          mdi-account
+        </v-icon>
         Зміна нікнейму
       </v-tab>
     </v-tabs>
