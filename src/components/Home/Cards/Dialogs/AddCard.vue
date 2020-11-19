@@ -46,22 +46,52 @@
           </template>
         </v-snackbar>
 
-        <v-subheader>Введіть дані вашої картки</v-subheader>
+        <v-container fluid>
+          <v-row align="center">
+            <v-col
+              :cols="cols"
+              :sm="mobile"
+              :md="flex"
+            >
+              <v-select
+                v-model="cardTypeSelected"
+                :items="cardTypes"
+                menu-props="auto"
+                label="Select"
+                hide-details
+                v-on:change="changeCardType"
+                :prepend-icon="cardTypeIcon"
+                single-line
+              ></v-select>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-subheader>Оберіть тип картки, яку бажаєте створити(<b>пароль</b>,<b>кредитка</b>,<b>нотатка</b>)</v-subheader>
+        <v-divider></v-divider>
         <v-list
           three-line
         >
-          <v-list-item>
+          <v-list-item v-if="cardTypeSelected !== 'Нотатка'">
             <v-list-item-content>
               <v-list-item-title>Базові дані</v-list-item-title>
-              <v-list-item-subtitle>Введіть базові дані вашої картки.</v-list-item-subtitle>
+              <v-list-item-subtitle v-if="cardTypeSelected === 'Пароль'">Обов`язково введіть <b>назву</b> та <b>пароль</b>.</v-list-item-subtitle>
+              <v-list-item-subtitle v-else-if="cardTypeSelected === 'Кредитна картка'">Обов`язково введіть <b>назву</b> та <b>номер кредитної картки</b>.</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
-          <v-form ref="form_req">
+          <v-list-item v-else>
+            <v-list-item-content>
+              <v-list-item-title>Ваша нотатка.</v-list-item-title>
+              <v-list-item-subtitle>Обов`язково введіть <b>назву</b>.</v-list-item-subtitle>
+              </v-list-item-content>
+          </v-list-item>
+
+          <v-form v-if="cardTypeSelected === 'Пароль'" ref="form_req">
             <v-list-item>
               <v-row>
-                <v-col cols="12"
-                       sm="6"
-                       md="3">
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
                   <v-text-field
                     label="Назва"
                     placeholder="напиши тут шось"
@@ -70,9 +100,9 @@
                     required
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12"
-                       sm="6"
-                       md="3">
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
                   <v-text-field
                     label="URL"
                     placeholder="ex. https://google.com"
@@ -85,9 +115,53 @@
             </v-list-item>
             <v-list-item>
               <v-row>
-                <v-col cols="12"
-                       sm="6"
-                       md="3">
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
+                  <v-text-field
+                    label="Пароль до сайту"
+                    placeholder="тут пароль"
+                    :rules="[validatePassword]"
+                    v-model="data.password"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-list-item>
+          </v-form>
+
+          <v-form v-else-if="cardTypeSelected === 'Кредитна картка'" ref="form_req">
+            <v-list-item>
+              <v-row>
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
+                  <v-text-field
+                    label="Назва"
+                    placeholder="напиши тут шось"
+                    :rules="[validateName]"
+                    v-model="data.name"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
+                  <v-text-field
+                    label="ПІБ власника картки"
+                    placeholder="напиши тут шось"
+                    :rules="[validateCardholder]"
+                    v-model="data.cardholder"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-list-item>
+            <v-list-item>
+              <v-row>
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
                   <v-text-field
                     label="Номер картки"
                     placeholder="0000 0000 0000 0000"
@@ -97,9 +171,9 @@
                     required
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12"
-                       sm="6"
-                       md="3">
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
                   <v-text-field
                     label="CVV"
                     placeholder="000"
@@ -111,24 +185,28 @@
                 </v-col>
               </v-row>
             </v-list-item>
+          </v-form>
+
+          <v-form v-else-if="cardTypeSelected === 'Нотатка'" ref="form_req">
             <v-list-item>
               <v-row>
-                <v-col cols="12"
-                       sm="6"
-                       md="3">
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
                   <v-text-field
-                    label="ПІБ власника картки"
+                    label="Назва"
                     placeholder="напиши тут шось"
-                    :rules="[validateCardholder]"
-                    v-model="data.cardholder"
+                    :rules="[validateName]"
+                    v-model="data.name"
                     required
                   ></v-text-field>
                 </v-col>
               </v-row>
             </v-list-item>
           </v-form>
-          <v-divider></v-divider>
-          <v-list-item>
+
+          <v-divider v-if="cardTypeSelected !== 'Нотатка'"></v-divider>
+          <v-list-item v-if="cardTypeSelected !== 'Нотатка'">
             <v-list-item-content>
               <v-list-item-title>Додаткові дані</v-list-item-title>
               <v-list-item-subtitle>Введіть додаткові дані вашої картки.</v-list-item-subtitle>
@@ -137,9 +215,9 @@
           <v-form ref="form">
             <v-list-item>
               <v-row>
-                <v-col cols="12"
-                       sm="6"
-                       md="3">
+                <v-col :cols="cols"
+                       :sm="mobile"
+                       :md="flex">
                   <v-textarea
                     counter
                     v-model="data.notes"
@@ -165,8 +243,14 @@
                   name: '',
                   url: '',
                   notes: '',
-                  cardholder: ''
+                  cardholder: '',
+                  password: ''
               },
+              mobile: 12,
+              flex: 4,
+              cols: 12,
+              cardTypeSelected: 'Пароль',
+              cardTypes: ['Пароль', 'Кредитна картка', 'Нотатка'],
               isLoading: false,
               invalidText: '',
               nameMaxBound: 20,
@@ -182,6 +266,16 @@
       computed: {
           cardState () {
               return this.state
+          },
+          cardTypeIcon () {
+            switch
+              (this.cardTypeSelected)
+            {
+              case 'Пароль': return 'mdi-lock'
+              case 'Кредитна картка': return 'mdi-credit-card'
+              case 'Нотатка': return 'mdi-file'
+              default : return 'mdi-card'
+            }
           }
       },
       props: {
@@ -192,6 +286,13 @@
               this.$refs.form.reset()
               this.$refs.form_req.reset()
               this.$emit('close')
+          },
+          validatePassword () {
+            if (this.data.password) {
+              const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
+              const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число'
+              return (pattern.test(this.data.password) || msg)
+            } else return 'Введіть пароль'
           },
           validateName () {
             if (this.data.name) {
@@ -212,7 +313,7 @@
                   if (unspacedCard.length !== 16) return lengthMsg
                   else if (!RegExp(this.cardRegex).test(unspacedCard)) return invalid
                   else return true
-              } else return true
+              } else return 'Введіть кредитну картку'
           },
           validateCVV () {
             if (this.data.cvv && this.data.cvv.length !== 3) return 'CVV складається з 3 цифр'
@@ -223,10 +324,30 @@
               this.data.cardholder.length > this.cardholderBound) return 'ПІБ має містити не більше ' + this.cardholderBound + ' символів'
             else return true
           },
-          validateCardInput () {
+          validatePasswordCardInput () {
+            const nameValid = this.validateName()
+            const urlValid = this.validateUrl()
+            const passwordValid = this.validatePassword()
+
+            if (nameValid !== true) {
+              this.invalid = true
+              this.invalidText = nameValid
+              return false
+            } else if (urlValid !== true) {
+              this.invalid = true
+              this.invalidText = urlValid
+              return false
+            } else if (passwordValid !== true) {
+              this.invalid = true
+              this.invalidText = passwordValid
+              return false
+            }
+
+            return true
+          },
+          validateCreditInput () {
             const nameValid = this.validateName()
             const cardNumberValid = this.validateCard()
-            const urlValid = this.validateUrl()
             const cardholderValid = this.validateCardholder()
             const cvvValid = this.validateCVV()
 
@@ -237,10 +358,6 @@
             } else if (cardNumberValid !== true) {
               this.invalid = true
               this.invalidText = cardNumberValid
-              return false
-            } else if (urlValid !== true) {
-              this.invalid = true
-              this.invalidText = urlValid
               return false
             } else if (cardholderValid !== true) {
               this.invalid = true
@@ -254,9 +371,37 @@
 
             return true
           },
+          validateNoteInput () {
+            const nameValid = this.validateName()
+
+            if (nameValid !== true) {
+              this.invalid = true
+              this.invalidText = nameValid
+              return false
+            }
+
+            return true
+          },
+          changeCardType () {
+            this.data.card = ''
+            this.data.cvv = ''
+            this.data.cardholder = ''
+            this.data.url = ''
+            this.data.password = ''
+          },
           saveCard () {
               this.isLoading = true
-              const validation = this.validateCardInput()
+              let validation = false
+              switch (this.cardTypeSelected) {
+                case 'Пароль':
+                  validation = this.validatePasswordCardInput()
+                  break
+                case 'Кредитна картка':
+                  validation = this.validateCreditInput()
+                  break
+                case 'Нотатка':
+                  validation = this.validateNoteInput()
+              }
               if (validation) {
                   this.$store.dispatch('cards/addCard', {
                       name: this.data.name,
@@ -264,7 +409,8 @@
                       notes: this.data.notes,
                       cardholderName: this.data.cardholder,
                       number: this.data.card === undefined ? undefined : this.data.card.replace(/\s/g, ''),
-                      cvv: this.data.cvv
+                      cvv: this.data.cvv,
+                      password: this.data.password
                   }).then((card) => {
                       this.isLoading = false
                       this.$emit('onSave')

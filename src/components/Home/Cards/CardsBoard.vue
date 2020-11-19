@@ -33,19 +33,21 @@
     >
       <v-card link>
         <v-list-item class="grow">
-          <v-list-item-avatar color="grey darken-3">
+          <v-list-item-icon color="grey darken-3">
             <v-img
-              class="elevation-6"
+              width="100px"
               alt=""
               :src="card.favicon"
             ></v-img>
-          </v-list-item-avatar>
+          </v-list-item-icon>
 
           <v-list-item-title v-text="card.title"></v-list-item-title>
         </v-list-item>
 
         <v-card-actions>
-          <v-btn icon>
+          <v-btn icon
+                 @click="doCopy(card)"
+          >
             <v-icon>
               mdi-content-copy
             </v-icon>
@@ -205,11 +207,16 @@ import EditCard from './Dialogs/EditCard'
 export default {
   data () {
     return {
+
       boardGrid: true,
       loadingCards: true,
       invalid: false,
       invalidText: '',
       cards: [],
+      src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+      pass_src: 'https://media.istockphoto.com/vectors/lock-vector-icon-vector-id658262428?k=6&m=658262428&s=170667a&w=0&h=o9oKaYxul5Kb6suZdC2n3AjCNeywTGpfEuCU1cDKl7U=',
+      note_src: 'https://static.vecteezy.com/system/resources/thumbnails/000/355/781/small/Education__2863_29.jpg',
+      credit_src: 'https://i.pinimg.com/originals/60/21/22/602122ed5585d2b52f21892d9569d751.png',
       states: {
         dialogs: {
           add: false,
@@ -228,6 +235,17 @@ export default {
     }
   },
   methods: {
+    doCopy (card) {
+      this.$copyText(card.toCopy)
+        .then(() => {
+          const text = 'Ви щойно скопіювали ' + card.cardType + ' картки ' + card.title
+          this.$emit('updateClipboard', text)
+        })
+        .catch(() => {
+          this.invalidText = 'Не вдалося скопіювати ' + card.cardType + ' картки ' + card.title + ' :/'
+          this.invalid = true
+        })
+    },
     editCard (cardSelected) {
       const cardList = this.$store.state.cards
       const card = cardList.cards.find(it => it.id === cardSelected.id)
@@ -287,13 +305,16 @@ export default {
         card => {
           const id = card.id
           const name = card.name
-          return {
+          const cardType = card.password !== '' ? 'пароль' : (card.number !== '' ? 'cvv' : 'нотатку')
+          const image = card.password !== '' ? (card.url !== '' ? 'https:/' + card.url + '/favicon.ico' : this.pass_src) : (card.number !== '' ? this.credit_src : this.note_src)
+            return {
             id,
             title: name,
-            src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-            favicon: card.url === '' ? 'https://png.pngtree.com/png-vector/20190130/ourmid/pngtree-credit-card-commercial-element-cardfinancial-elementai-illustration-png-image_595759.jpg' : 'https:/' + card.url + '/favicon.ico',
+            favicon: image,
             flex: this.boardGrid ? 3 : 12,
-            mobile: this.boardGrid ? 6 : 12
+            mobile: this.boardGrid ? 6 : 12,
+            cardType: cardType,
+            toCopy: (card.password !== '') ? (card.password) : ((card.cvv !== '') ? card.cvv : (card.notes !== '' ? card.notes : ' '))
           }
         }
       )
