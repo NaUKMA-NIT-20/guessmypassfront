@@ -187,6 +187,7 @@
       :state="states.dialogs.add"
       @close="closeAddDialog"
       @onSave="getCards"
+      ref="add_Card"
     ></add-card>
 
     <edit-card
@@ -312,7 +313,7 @@ export default {
             title: name,
             favicon: image,
             flex: this.boardGrid ? 3 : 12,
-            mobile: this.boardGrid ? 6 : 12,
+            mobile: this.boardGrid ? 12 : 12,
             cardType: cardType,
             toCopy: (card.password !== '') ? (card.password) : ((card.number !== '') ? card.number : (card.notes !== '' ? card.notes : ' '))
           }

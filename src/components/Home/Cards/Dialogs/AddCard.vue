@@ -4,6 +4,8 @@
       v-model="cardState"
       fullscreen
       hide-overlay
+      :no-click-animation="true"
+      :persistent="true"
       transition="dialog-bottom-transition"
     >
       <v-card>
@@ -67,7 +69,8 @@
           </v-row>
         </v-container>
 
-        <v-subheader>Оберіть тип картки, яку бажаєте створити(<b>пароль</b>,<b>кредитка</b>,<b>нотатка</b>)</v-subheader>
+        <v-subheader>Оберіть тип картки, яку бажаєте створити(<b>пароль</b>, <b>кредитка</b>, <b>нотатка</b>)
+        </v-subheader>
         <v-divider></v-divider>
         <v-list
           three-line
@@ -95,7 +98,7 @@
                   <v-text-field
                     label="Назва"
                     placeholder="напиши тут шось"
-                    :rules="[validateName]"
+                    :rules="[library.Validation.validateUsername]"
                     v-model="data.name"
                     required
                   ></v-text-field>
@@ -106,7 +109,7 @@
                   <v-text-field
                     label="URL"
                     placeholder="ex. https://google.com"
-                    :rules="[validateUrl]"
+                    :rules="[library.Validation.validateUrl]"
                     v-model="data.url"
                     required
                   ></v-text-field>
@@ -121,7 +124,7 @@
                   <v-text-field
                     label="Пароль до сайту"
                     placeholder="тут пароль"
-                    :rules="[validatePassword]"
+                    :rules="[library.Validation.validatePassword]"
                     v-model="data.password"
                     required
                   ></v-text-field>
@@ -139,7 +142,7 @@
                   <v-text-field
                     label="Назва"
                     placeholder="напиши тут шось"
-                    :rules="[validateName]"
+                    :rules="[library.Validation.validateUsername]"
                     v-model="data.name"
                     required
                   ></v-text-field>
@@ -150,7 +153,7 @@
                   <v-text-field
                     label="ПІБ власника картки"
                     placeholder="напиши тут шось"
-                    :rules="[validateCardholder]"
+                    :rules="[library.Validation.validateUsername]"
                     v-model="data.cardholder"
                     required
                   ></v-text-field>
@@ -166,7 +169,7 @@
                     label="Номер картки"
                     placeholder="0000 0000 0000 0000"
                     v-model="data.card"
-                    :rules="[validateCard]"
+                    :rules="[library.Validation.validateCard]"
                     v-mask="cardMask"
                     required
                   ></v-text-field>
@@ -178,7 +181,7 @@
                     label="CVV"
                     placeholder="000"
                     v-model="data.cvv"
-                    :rules="[validateCVV]"
+                    :rules="[library.Validation.validateCvv]"
                     v-mask="cvvMask"
                     required
                   ></v-text-field>
@@ -196,7 +199,7 @@
                   <v-text-field
                     label="Назва"
                     placeholder="напиши тут шось"
-                    :rules="[validateName]"
+                    :rules="[library.Validation.validateUsername]"
                     v-model="data.name"
                     required
                   ></v-text-field>
@@ -234,9 +237,13 @@
   </v-row>
 </template>
 <script>
+  import { Patterns, Bounds, CardsValidation, AuthorisationValidation } from '../../../../assets/js/Validation'
   export default {
       data () {
           return {
+              library: {
+                Patterns, Bounds, Validation: { ...AuthorisationValidation, ...CardsValidation }
+              },
               data: {
                   card: '',
                   cvv: '',
@@ -253,14 +260,8 @@
               cardTypes: ['Пароль', 'Кредитна картка', 'Нотатка'],
               isLoading: false,
               invalidText: '',
-              nameMaxBound: 20,
-              cardholderBound: 40,
-              cardMask: '#### #### #### ####',
-              cvvMask: '###',
-              cardRegex: '^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})$',
-              urlRegex:
-                  '^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&\'\\(\\)\\*\\+,;=.]+$',
-              invalid: false
+              invalid: false,
+              ...Patterns
           }
       },
       computed: {
@@ -289,47 +290,10 @@
                   this.$refs.form_req.reset()
               }, 500)
           },
-          validatePassword () {
-            if (this.data.password) {
-              const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
-              const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число'
-              return (pattern.test(this.data.password) || msg)
-            } else return 'Введіть пароль'
-          },
-          validateName () {
-            if (this.data.name) {
-              if (this.data.name.length > this.nameMaxBound) return 'Назва має містити не більше ' + this.nameMaxBound + ' символів'
-              else return true
-            } else return 'Введіть назву'
-          },
-          validateUrl () {
-              if (this.data.url &&
-                !RegExp(this.urlRegex).test(this.data.url)) return 'Посилання не дійсне'
-              else return true
-          },
-          validateCard () {
-              const lengthMsg = 'Довжина номера картки складається з 16 цифр'
-              const invalid = 'Номер картки не дійсний'
-              if (this.data.card) {
-                  const unspacedCard = this.data.card.replace(/\s/g, '')
-                  if (unspacedCard.length !== 16) return lengthMsg
-                  else if (!RegExp(this.cardRegex).test(unspacedCard)) return invalid
-                  else return true
-              } else return 'Введіть кредитну картку'
-          },
-          validateCVV () {
-            if (this.data.cvv && this.data.cvv.length !== 3) return 'CVV складається з 3 цифр'
-            else return true
-          },
-          validateCardholder () {
-            if (this.data.cardholder &&
-              this.data.cardholder.length > this.cardholderBound) return 'ПІБ має містити не більше ' + this.cardholderBound + ' символів'
-            else return true
-          },
           validatePasswordCardInput () {
-            const nameValid = this.validateName()
-            const urlValid = this.validateUrl()
-            const passwordValid = this.validatePassword()
+            const nameValid = this.library.Validation.validateUsername(this.data.name)
+            const urlValid = this.library.Validation.validateUrl(this.data.url)
+            const passwordValid = this.library.Validation.validatePassword(this.data.password)
 
             if (nameValid !== true) {
               this.invalid = true
@@ -348,10 +312,10 @@
             return true
           },
           validateCreditInput () {
-            const nameValid = this.validateName()
-            const cardNumberValid = this.validateCard()
-            const cardholderValid = this.validateCardholder()
-            const cvvValid = this.validateCVV()
+            const nameValid = this.library.Validation.validateUsername(this.data.name)
+            const cardNumberValid = this.library.Validation.validateCard(this.data.card)
+            const cardholderValid = this.library.Validation.validateUsername(this.data.cardholder)
+            const cvvValid = this.library.Validation.validateCvv(this.data.cvv)
 
             if (nameValid !== true) {
               this.invalid = true
@@ -374,7 +338,7 @@
             return true
           },
           validateNoteInput () {
-            const nameValid = this.validateName()
+            const nameValid = this.library.Validation.validateUsername(this.data.name)
 
             if (nameValid !== true) {
               this.invalid = true
