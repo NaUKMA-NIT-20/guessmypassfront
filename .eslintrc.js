@@ -17,6 +17,7 @@ module.exports = {
     'brace-style': 'off',
     'no-trailing-spaces': 'off',
     'no-sequences': 'off',
-    'no-unused-expressions': 'off'
+    'no-unused-expressions': 'off',
+    'prefer-const': 'off'
   }
 }

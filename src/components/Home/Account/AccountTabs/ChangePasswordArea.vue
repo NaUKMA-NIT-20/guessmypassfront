@@ -3,11 +3,11 @@
     <v-col cols="12">
       <v-text-field
         v-model="password"
-        :counter="passwordBounds.max"
-        :maxlength="passwordBounds.max"
+        :counter="library.Bounds.passwordBounds.max"
+        :maxlength="library.Bounds.passwordBounds.max"
         label="Ваш старий пароль"
         placeholder="Старий пароль"
-        :rules="[rules.password]"
+        :rules="[library.Auth.validatePassword]"
         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append="() => (showPassword = !showPassword)"
         :type="showPassword ? 'text' : 'password'"
@@ -18,11 +18,11 @@
     <v-col cols="12">
       <v-text-field
         v-model="newPassword"
-        :counter="passwordBounds.max"
-        :maxlength="passwordBounds.max"
+        :counter="library.Bounds.passwordBounds.max"
+        :maxlength="library.Bounds.passwordBounds.max"
         label="Ваш новий пароль"
         placeholder="Новий крутий пароль"
-        :rules="[rules.password]"
+        :rules="[library.Auth.validatePassword]"
         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append="() => (showPassword = !showPassword)"
         :type="showPassword ? 'text' : 'password'"
@@ -33,11 +33,11 @@
     <v-col cols="12">
       <v-text-field
         v-model="newPasswordRepeat"
-        :counter="passwordBounds.max"
-        :maxlength="passwordBounds.max"
+        :counter="library.Bounds.passwordBounds.max"
+        :maxlength="library.Bounds.passwordBounds.max"
         label="Повторіть новий пароль"
         placeholder="Новий крутий пароль"
-        :rules="[passwordMatch ? true : 'Пароль не співпадає']"
+        :rules="[library.Auth.validateMatchingPasswords]"
         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append="() => (showPassword = !showPassword)"
         :type="showPassword ? 'text' : 'password'"
@@ -48,30 +48,20 @@
 
 </template>
 <script>
-
+    import { Patterns, Bounds, AuthorisationValidation } from '../../../../assets/js/Validation'
 export default {
+
   name: 'ChangePasswordArea',
   data () {
     return {
+      library: {
+          Patterns, Bounds, AuthorisationValidation
+      },
       password: '',
       newPassword: '',
       newPasswordRepeat: '',
       showPassword: false,
-      isLoading: false,
-      rules: {
-        password: value => {
-          if (value !== '') {
-            const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
-            const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число'
-            return (pattern.test(value) || msg)
-          }
-          return true
-        }
-      },
-      passwordBounds: {
-        min: 8,
-        max: 120
-      }
+      isLoading: false
     }
   },
   methods: {

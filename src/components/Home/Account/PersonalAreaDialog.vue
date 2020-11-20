@@ -169,7 +169,7 @@ export default {
   }
 }
 </script>
-<style lang="sass">
+<style lang="sass" scoped>
 @import "../../../assets/sass/assets/variables/colors"
 .v-text-field .v-counter
   color: $azure !important
@@ -182,6 +182,8 @@ export default {
   background-color: $azure !important
   width: 100%
   color: white
-.v-dialog:not(.v-dialog--active), .v-dialog.scroll-y-transition-enter-active
-  overflow: hidden!important
+</style>
+<style lang="sass">
+  .v-dialog:not(.v-dialog--active), .v-dialog.scroll-y-transition-enter-active
+    overflow: hidden!important
 </style>
