@@ -2,12 +2,19 @@
   <v-row justify="center">
     <v-dialog
       v-model="cardState"
-      fullscreen
+      max-width="600px"
+      scrollable
+      persistent
       hide-overlay
       transition="dialog-bottom-transition"
     >
       <v-card>
-        <v-toolbar
+        <v-app-bar
+          absolute
+          style="position: sticky"
+          max-width="600px"
+          fixed
+          dense
           dark
           color="primary"
         >
@@ -21,16 +28,8 @@
           <v-toolbar-title>Редагувати картку</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn
-              dark
-              text
-              :loading="isLoading"
-              @click="saveEditedCard"
-            >
-              Зберегти зміни
-            </v-btn>
           </v-toolbar-items>
-        </v-toolbar>
+        </v-app-bar>
 
         <v-snackbar
           v-model="invalid">
@@ -46,7 +45,6 @@
           </template>
         </v-snackbar>
 
-        <v-subheader>Редагуйте картку.</v-subheader>
         <v-list
           three-line
         >
@@ -61,7 +59,7 @@
               <v-row>
                 <v-col cols="12"
                        sm="6"
-                       md="3">
+                       md="6">
                   <v-text-field
                     label="Назва"
                     placeholder="напиши тут шось"
@@ -72,7 +70,7 @@
                 </v-col>
                 <v-col cols="12"
                        sm="6"
-                       md="3">
+                       md="6">
                   <v-text-field
                     label="URL"
                     placeholder="ex. https://google.com"
@@ -87,7 +85,7 @@
               <v-row>
                 <v-col cols="12"
                        sm="6"
-                       md="3">
+                       md="6">
                   <v-text-field
                     label="Номер картки"
                     placeholder="0000 0000 0000 0000"
@@ -98,7 +96,7 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12"
-                       sm="6"
+                       sm="3"
                        md="3">
                   <v-text-field
                     label="CVV"
@@ -115,7 +113,7 @@
               <v-row>
                 <v-col cols="12"
                        sm="6"
-                       md="3">
+                       md="6">
                   <v-text-field
                     label="ПІБ власника картки"
                     placeholder="напиши тут шось"
@@ -138,8 +136,8 @@
             <v-list-item>
               <v-row>
                 <v-col cols="12"
-                       sm="6"
-                       md="3">
+                       sm="12"
+                       md="12">
                   <v-textarea
                     counter
                     v-model="data.notes"
@@ -150,6 +148,16 @@
                 </v-col></v-row>
             </v-list-item>
           </v-form>
+          <v-btn
+            style="position: sticky; padding-left: 70%"
+            dark
+            color="primary"
+            text
+            :loading="isLoading"
+            @click="saveEditedCard"
+          >
+            Зберегти зміни
+          </v-btn>
         </v-list>
       </v-card>
     </v-dialog>
