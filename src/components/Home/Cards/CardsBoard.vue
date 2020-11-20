@@ -305,7 +305,7 @@ export default {
         card => {
           const id = card.id
           const name = card.name
-          const cardType = card.password !== '' ? 'пароль' : (card.number !== '' ? 'cvv' : 'нотатку')
+          const cardType = card.password !== '' ? 'пароль' : (card.number !== '' ? 'номер' : 'нотатку')
           const image = card.password !== '' ? (card.url !== '' ? 'https:/' + card.url + '/favicon.ico' : this.pass_src) : (card.number !== '' ? this.credit_src : this.note_src)
             return {
             id,
@@ -314,14 +314,15 @@ export default {
             flex: this.boardGrid ? 3 : 12,
             mobile: this.boardGrid ? 6 : 12,
             cardType: cardType,
-            toCopy: (card.password !== '') ? (card.password) : ((card.cvv !== '') ? card.cvv : (card.notes !== '' ? card.notes : ' '))
+            toCopy: (card.password !== '') ? (card.password) : ((card.number !== '') ? card.number : (card.notes !== '' ? card.notes : ' '))
           }
         }
       )
     },
     changeBoardGrid () {
+      const cardList = this.$store.state.cards
       this.boardGrid = !this.boardGrid
-      this.getCards()
+      this.cards = this.renderCards(cardList.cards)
     },
     closeAddDialog () {
       this.states.dialogs.add = false
