@@ -6,6 +6,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import { VueMaskDirective } from 'v-mask'
 import VuetifyConfirm from 'vuetify-confirm'
+import VueClipboard from 'vue-clipboard2'
 Vue.directive('mask', VueMaskDirective)
 Vue.config.productionTip = false
 Vue.use(VuetifyConfirm, {
@@ -15,6 +16,8 @@ Vue.use(VuetifyConfirm, {
   width: 350,
   property: '$confirm'
 })
+
+Vue.use(VueClipboard)
 
 new Vue({
   router,

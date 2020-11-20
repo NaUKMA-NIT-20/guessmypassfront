@@ -2,13 +2,18 @@
   <v-row>
     <v-col cols="12">
       <v-text-field
+        class="v-text-field--1"
         v-model="username"
         label="Введіть старий нік"
         placeholder="Старий нік"
         :rules="[library.Auth.validateUsername]"
       >
       </v-text-field>
+    </v-col>
+
+    <v-col cols="12">
       <v-text-field
+        class="v-text-field--2"
         v-model="newUsername"
         label="Введіть новий нік"
         placeholder="Новий крутий нік"
@@ -64,6 +69,11 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="sass" scoped>
+.v-text-field--1
+  padding-top: 39px
+  padding-bottom: 39px
+.v-text-field--2
+  padding-top: 5px
+  padding-bottom: 35px
 </style>

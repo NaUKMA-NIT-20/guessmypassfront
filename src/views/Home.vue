@@ -102,7 +102,9 @@
                               @updatedPassword = "updatedPassword"
                               @updatedUsername = "updatedUsername">
         </personal-area-dialog>
-        <cards-board></cards-board>
+        <cards-board
+          @updateClipboard = "updateClipboard"
+        ></cards-board>
 
       </v-container>
       <v-snackbar
@@ -190,6 +192,11 @@ export default {
       this.dialogs.states.account = false
       this.dialogs.states.updatedData = true
       this.dialogs.states.updateText = 'Нікнейм був успішно оновлений'
+    },
+    updateClipboard (text) {
+      this.dialogs.states.account = false
+      this.dialogs.states.updatedData = true
+      this.dialogs.states.updateText = text
     }
   }
 }
