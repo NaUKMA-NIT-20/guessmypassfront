@@ -25,7 +25,7 @@
     </v-container>
 
     <v-col v-else-if="this.boardGrid"
-           v-for="card in cards"
+           v-for="card in filteredCards"
            :key="card.id"
            :cols="card.mobile"
            :xs="card.mobile"
@@ -38,6 +38,7 @@
               width="100px"
               alt=""
               :src="card.favicon"
+              @error="(() => card.favicon = pass_src)"
             ></v-img>
           </v-list-item-icon>
 
@@ -81,7 +82,7 @@
     </v-col>
 
     <v-col v-else
-           v-for="card in cards"
+           v-for="card in filteredCards"
            :key="card.id"
            :cols="card.mobile"
            :xs="card.mobile"
@@ -94,13 +95,15 @@
               class="elevation-6"
               alt=""
               :src="card.favicon"
+              @error="(() => card.favicon = pass_src)"
             ></v-img>
           </v-list-item-avatar>
 
           <v-list-item-title v-text="card.title"></v-list-item-title>
 
           <v-card-actions>
-            <v-btn icon>
+            <v-btn icon
+                   @click="doCopy(card)">
               <v-icon>
                 mdi-content-copy
               </v-icon>
@@ -204,6 +207,9 @@
 <script>
 import AddCard from './Dialogs/AddCard'
 import EditCard from './Dialogs/EditCard'
+import creditImage from '../../../../src/assets/credit.png'
+import noteImage from '../../../../src/assets/note.jpg'
+import passImage from '../../../../src/assets/lock.jpg'
 
 export default {
   data () {
@@ -214,10 +220,9 @@ export default {
       invalid: false,
       invalidText: '',
       cards: [],
-      src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-      pass_src: 'https://media.istockphoto.com/vectors/lock-vector-icon-vector-id658262428?k=6&m=658262428&s=170667a&w=0&h=o9oKaYxul5Kb6suZdC2n3AjCNeywTGpfEuCU1cDKl7U=',
-      note_src: 'https://static.vecteezy.com/system/resources/thumbnails/000/355/781/small/Education__2863_29.jpg',
-      credit_src: 'https://i.pinimg.com/originals/60/21/22/602122ed5585d2b52f21892d9569d751.png',
+      pass_src: passImage,
+      note_src: noteImage,
+      credit_src: creditImage,
       states: {
         dialogs: {
           add: false,
@@ -226,6 +231,9 @@ export default {
       }
     }
   },
+  props: {
+    searchCard: String
+  },
   components: {
     AddCard,
     EditCard
@@ -233,6 +241,9 @@ export default {
   computed: {
     boardGridComputed () {
       return this.boardGrid
+    },
+    filteredCards () {
+      return this.cards.filter(card => card.title.includes(this.searchCard))
     }
   },
   methods: {
@@ -307,7 +318,8 @@ export default {
           const id = card.id
           const name = card.name
           const cardType = card.password !== '' ? 'пароль' : (card.number !== '' ? 'номер' : 'нотатку')
-          const image = card.password !== '' ? (card.url !== '' ? 'https:/' + card.url + '/favicon.ico' : this.pass_src) : (card.number !== '' ? this.credit_src : this.note_src)
+          const faviconURL = card.url !== '' ? 'https:/' + card.url + '/favicon.ico' : card.url
+          const image = card.password !== '' ? (faviconURL !== '' ? faviconURL : this.pass_src) : (card.number !== '' ? this.credit_src : this.note_src)
             return {
             id,
             title: name,

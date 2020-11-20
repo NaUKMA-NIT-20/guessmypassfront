@@ -7,6 +7,8 @@
       :no-click-animation="true"
       :persistent="true"
       transition="dialog-bottom-transition"
+      :no-click-animation="true"
+      :persistent="true"
     >
       <v-card>
         <v-toolbar
@@ -286,6 +288,7 @@
       },
       methods: {
           closeDialog () {
+              this.changeCardType()
               this.$emit('close')
               setTimeout(function () {
                   this.$refs.form.reset()
