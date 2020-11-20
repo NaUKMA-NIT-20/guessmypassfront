@@ -102,7 +102,8 @@
           <v-list-item-title v-text="card.title"></v-list-item-title>
 
           <v-card-actions>
-            <v-btn icon>
+            <v-btn icon
+                   @click="doCopy(card)">
               <v-icon>
                 mdi-content-copy
               </v-icon>
