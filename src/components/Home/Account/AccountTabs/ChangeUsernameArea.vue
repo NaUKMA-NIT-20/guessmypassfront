@@ -5,14 +5,14 @@
         v-model="username"
         label="Введіть старий нік"
         placeholder="Старий нік"
-        :rules="[username => isUsernameValid(username)]"
+        :rules="[library.Auth.validateUsername]"
       >
       </v-text-field>
       <v-text-field
         v-model="newUsername"
         label="Введіть новий нік"
         placeholder="Новий крутий нік"
-        :rules="[username => isUsernameValid(newUsername)]"
+        :rules="[library.Auth.validateUsername]"
       >
       </v-text-field>
     </v-col>
@@ -20,16 +20,16 @@
 </template>
 
 <script>
+    import { Patterns, Bounds, AuthorisationValidation } from '../../../../assets/js/Validation'
 export default {
   name: 'ChangeUsernameArea',
   data () {
     return {
+        library: {
+            Patterns, Bounds, Auth: AuthorisationValidation
+        },
       username: '',
-      newUsername: '',
-      usernameBounds: {
-        min: 3,
-        max: 14
-      }
+      newUsername: ''
     }
   },
   props: {
@@ -43,26 +43,19 @@ export default {
       }
     },
     validateUsernames () {
-      const nameOld = this.username.length >= this.usernameBounds.min ? this.username.length <= this.usernameBounds.max ? true
-        : 'Нікнейм задовгий. Максимальна кількість символів: ' + this.usernameBounds.max : 'Нікнейм закороткий. Мінімальна кількість символів: ' + this.usernameBounds.min
-      const nameNew = this.newUsername.length >= this.usernameBounds.min ? this.newUsername.length <= this.usernameBounds.max ? true
-        : 'Нікнейм задовгий. Максимальна кількість символів: ' + this.usernameBounds.max : 'Нікнейм закороткий. Мінімальна кількість символів: ' + this.usernameBounds.min
-      return nameNew !== true ? nameNew : nameOld !== true ? nameOld : true
+      const validatorOld = this.library.Auth.validateUsername(this.username)
+      const validatorNew = this.library.Auth.validateUsername(this.newUsername)
+      const oldInstructions = this.library.Auth.getUsernameInstructions(this.username, validatorOld)
+      const newIntstructions = this.library.Auth.getUsernameInstructions(this.newUsername, validatorNew)
+      let msg = ''
+      if (oldInstructions.invalid) msg += oldInstructions.message + ' '
+      if (newIntstructions.invalid) msg += newIntstructions.message
+      if (msg === '') return true
+      return msg
     },
     cleanFields () {
       this.username = ''
       this.newUsername = ''
-    },
-    isUsernameValid (username) {
-      if (username === '') {
-        return true
-      } else if (username.length < this.usernameBounds.min) {
-        return 'Нікнейм занадто короткий'
-      } else if (username.length > this.usernameBounds.max) {
-        return 'Нікнейм занадто довгий'
-      } else {
-        return true
-      }
     },
     isActive () {
       return true

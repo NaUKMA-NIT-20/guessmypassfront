@@ -50,7 +50,7 @@
 
       <!--<v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon> !-->
 
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-toolbar-title>{{ 'Ваші дані, ' + username }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -138,7 +138,6 @@ export default {
           icon: 'mdi-forum'
         }
       ],
-      title: 'Ваші акаунти',
       auth_btn: {
         items: [
           {
@@ -167,8 +166,13 @@ export default {
     }
   },
   components: {
-    PersonalAreaDialog,
+      PersonalAreaDialog,
       CardsBoard
+  },
+  computed: {
+      username () {
+          return this.$store.getters['auth/getUsername']
+      }
   },
   methods: {
     logout () {

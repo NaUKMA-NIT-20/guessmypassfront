@@ -5,7 +5,7 @@
         <v-text-field
           v-model="email"
           type="email"
-          :rules="[email => isEmailValid(email)]"
+          :rules="[library.Auth.validateEmail]"
           label="Ваш імейл"
           required
         ></v-text-field>
@@ -13,10 +13,10 @@
       <v-row>
         <v-text-field
           v-model="password"
-          :counter="passwordBounds.max"
-          :maxlength="passwordBounds.max"
+          :counter="library.Bounds.passwordBounds.max"
+          :maxlength="library.Bounds.passwordBounds.max"
           label="Ваш пароль"
-          :rules="[rules.password]"
+          :rules="[library.Auth.validatePassword]"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           @click:append="() => (showPassword = !showPassword)"
           :type="showPassword ? 'text' : 'password'"
@@ -50,89 +50,58 @@
   </v-form>
 </template>
 <script>
-export default {
+  import { Patterns, Bounds, AuthorisationValidation, helperFunction } from '../assets/js/Validation'
+  import { encryptingFunctions } from '../assets/js/Cryptor'
+
+  export default {
   name: 'LoginForm',
   data: () => ({
+    library: {
+        Patterns, Bounds, Auth: AuthorisationValidation
+    },
     email: '',
     password: '',
     showPassword: false,
     invalid: false,
     invalidText: '',
-    isLoading: false,
-    rules: {
-      password: value => {
-        const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
-        const msg = 'Мін. 8 символів і хоча б одна заголовна буква, число'
-        return value !== '' ? (pattern.test(value) || msg) : true
-      }
-    },
-    emailRegex: /\b[\w\\.-]+@[\w\\.-]+\.\w{2,4}\b/,
-    passwordBounds: {
-      min: 8,
-      max: 120
-    }
+    isLoading: false
   }),
   methods: {
-    isEmailValid (email) {
-      if (email === '') {
-        return true
-      } else if (!this.emailRegex.test(email)) {
-        return 'Неправильна пошта'
-      } else {
-        return true
-      }
-    },
     async toLogin () {
       this.validateLogin()
       if (!this.invalid) {
         this.isLoading = true
-        this.$store.dispatch('auth/toLogin',
-          {
+        const loginData = {
             email: this.email,
             password: this.password
-          })
+        }
+        this.$store.dispatch('auth/toLogin',
+          encryptingFunctions.encryptLogin(loginData))
           .then((user) => {
             this.isLoading = false
             console.log(user)
           })
-          .catch((error) => {
+          .catch(async (error) => {
             this.isLoading = false
-            switch (error.status) {
-              case 400:
-                this.invalidText = 'Неправильний логін або пароль:/'
-                break
-              case 404:
-                this.invalidText = 'Користувача не знайдено:/'
-                break
-              case 500:
-                this.invalidText = 'Помилка сервера. Спробуйте пізніше:/'
-                break
-              default:
-                this.invalidText = 'Незнайома помилка ¯\\_(ツ)_/¯'
-            }
+            this.invalidText = helperFunction.checkLoginError(await error)
             this.invalid = true
           })
       }
     },
     validateLogin () {
-      const emailValid = this.isEmailValid(this.email)
-      const passValid = this.rules.password(this.password)
-      if (emailValid !== true || this.email === '') {
-        this.invalidText = emailValid
-        if (this.email === '') {
-          this.invalidText = 'Введіть пошту'
-        }
-        this.invalid = true
-      } else if (passValid !== true || this.password === '') {
-        this.invalidText = passValid
-        if (this.password === '') {
-          this.invalidText = 'Введіть пароль'
-        }
-        this.invalid = true
+      const emailValid = this.library.Auth.validateEmail(this.email)
+      const passValid = this.library.Auth.validatePassword(this.password)
+      const emailInstructions = this.library.Auth.getEmailInstructions(this.email, emailValid)
+      const passwordInstructions = this.library.Auth.getPasswordInstructions(this.password, passValid)
+        if (emailInstructions.invalid) {
+          this.invalid = emailInstructions.invalid
+          this.invalidText = emailInstructions.message
+      } else if (passwordInstructions.invalid) {
+            this.invalid = passwordInstructions.invalid
+            this.invalidText = passwordInstructions.message
       }
     }
   }
-
 }
 </script>
 <style lang="sass" scoped>
