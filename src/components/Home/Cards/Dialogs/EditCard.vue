@@ -3,6 +3,7 @@
     <v-dialog
       v-model="cardState"
       max-width="800px"
+      transition="scroll-y-transition"
     >
       <v-card>
         <v-toolbar
