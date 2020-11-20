@@ -1,13 +1,17 @@
 import Axios from 'axios'
 import router from '../../router/index.js'
-
 export default {
   namespaced: true,
   state: {
     tokenApi: localStorage.getItem('token') || null,
-    publicKey: localStorage.getItem('publicKey') || null
+    publicKey: localStorage.getItem('publicKey') || null,
+    username: localStorage.getItem('username') || null
   },
   mutations: {
+    setUsername (state, params) {
+      localStorage.setItem('username', params)
+      state.username = localStorage.getItem('username')
+    },
     setToken (state, token) {
       localStorage.setItem('token', token)
       state.tokenApi = localStorage.getItem('token')
@@ -19,8 +23,10 @@ export default {
     resetUser (state) {
       localStorage.setItem('token', null)
       localStorage.setItem('publicKey', null)
+      localStorage.setItem('username', null)
       state.tokenApi = localStorage.getItem('token')
       state.publicKey = localStorage.getItem('publicKey')
+      state.username = localStorage.getItem('username')
     }
   },
   actions: {
@@ -48,6 +54,7 @@ export default {
           response => {
             if (response.status === 200) {
               context.commit('setToken', response.data.token)
+              context.commit('setUsername', response.data.username)
               router.push({
                 name: 'Home'
               })
@@ -104,9 +111,11 @@ export default {
           })
       })
     },
-
     createPublicKey (context, params) {
       context.commit('setPublicKey', params)
+    },
+    saveNewUsername (context, params) {
+      context.commit('setUsername', params)
     }
   },
   getters: {
@@ -118,6 +127,12 @@ export default {
     },
     getPublicKey: state => {
       return state.publicKey
+    },
+    getUsername: state => {
+      return state.username
+    },
+    getPassword: state => {
+      return state.password
     }
   }
 }

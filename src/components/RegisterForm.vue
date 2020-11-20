@@ -126,9 +126,9 @@ export default {
             this.isLoading = false
             console.log(user)
           })
-          .catch((error) => {
+          .catch(async (error) => {
             this.isLoading = false
-            this.invalidText = helperFunction.checkRegisterError(error)
+            this.invalidText = helperFunction.checkRegisterError(await error)
             this.invalid = true
           })
       }

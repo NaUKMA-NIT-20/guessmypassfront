@@ -1,6 +1,13 @@
 import CryptoJS from 'crypto-js'
 import store from '../../store/index'
 export const encryptingFunctions = {
+  encrypt (data) {
+    let key = localStorage.getItem('publicKey')
+    return CryptoJS.AES.encrypt(data, key).toString()
+  },
+  encryptPassword (password) {
+    return CryptoJS.SHA256(password).toString(CryptoJS.enc.Base64)
+  },
   encryptLogin (data) {
     const privateKey = CryptoJS.SHA256(data.password).toString(CryptoJS.enc.Base64)
     const fullPassword = privateKey + data.password
@@ -14,16 +21,15 @@ export const encryptingFunctions = {
     const privateKey = CryptoJS.SHA256(data.password).toString(CryptoJS.enc.Base64)
     const publicKey = privateKey + data.password
     store.dispatch('auth/createPublicKey', publicKey)
-    const username = CryptoJS.AES.encrypt(data.username, publicKey).toString()
     return {
       email: data.email,
       password: privateKey,
       passwordHelp: data.passwordHelp,
-      username
+      username: data.username
     }
   },
   decrypt (data) {
-    const key = this.$router.auth.getters.getPublicKey()
-    return CryptoJS.AES.decrypt(data, key)
+    let key = localStorage.getItem('publicKey')
+    return CryptoJS.AES.decrypt(data, key).toString(CryptoJS.enc.Utf8)
   }
 }

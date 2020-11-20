@@ -81,9 +81,9 @@
             this.isLoading = false
             console.log(user)
           })
-          .catch((error) => {
+          .catch(async (error) => {
             this.isLoading = false
-            this.invalidText = helperFunction.checkLoginError(error)
+            this.invalidText = helperFunction.checkLoginError(await error)
             this.invalid = true
           })
       }

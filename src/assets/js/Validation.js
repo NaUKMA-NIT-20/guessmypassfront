@@ -125,6 +125,7 @@ export const AuthorisationValidation = {
 
 export const helperFunction = {
   checkLoginError (error) {
+    console.log(error.status)
     switch (error.status) {
       case 400:
         return 'Неправильний логін або пароль:/'

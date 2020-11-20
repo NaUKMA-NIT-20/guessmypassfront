@@ -37,7 +37,7 @@
         :maxlength="library.Bounds.passwordBounds.max"
         label="Повторіть новий пароль"
         placeholder="Новий крутий пароль"
-        :rules="[library.Auth.validateMatchingPasswords]"
+        :rules="[library.Auth.validateMatchingPasswords(passwordMatch)]"
         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
         @click:append="() => (showPassword = !showPassword)"
         :type="showPassword ? 'text' : 'password'"
@@ -55,7 +55,7 @@ export default {
   data () {
     return {
       library: {
-          Patterns, Bounds, AuthorisationValidation
+          Patterns, Bounds, Auth: AuthorisationValidation
       },
       password: '',
       newPassword: '',
@@ -72,8 +72,8 @@ export default {
       }
     },
     validatePasswords () {
-      const passOld = this.password.length < 1 ? 'Введіть пароль, який хочете змінити' : this.rules.password(this.password)
-      const passNew = this.newPassword.length < 1 ? 'Введіть новий пароль' : this.rules.password(this.newPassword)
+      const passOld = this.password.length < 1 ? 'Введіть пароль, який хочете змінити' : this.library.Auth.validatePassword(this.password)
+      const passNew = this.newPassword.length < 1 ? 'Введіть новий пароль' : this.library.Auth.validatePassword(this.newPassword)
       const result = (passOld === true) ? ((passNew === true) ? true : passNew) : passOld
       return (result === true) ? (this.passwordMatch ? true : 'Пароль не співпадає') : result
     },
