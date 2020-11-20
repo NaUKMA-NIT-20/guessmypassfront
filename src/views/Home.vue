@@ -50,20 +50,15 @@
 
       <!--<v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon> !-->
 
-      <v-toolbar-title>{{ 'Ваші дані, ' + username }}</v-toolbar-title>
+      <v-toolbar-title>{{ welcomeText}}</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-col
-        :cols="12"
-        :sm="5"
-        :md="3"
-      >
         <v-text-field
           v-model="searchText"
+          style="max-width: 500px"
         >
         </v-text-field>
-      </v-col>
 
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
@@ -187,6 +182,16 @@ export default {
   computed: {
       username () {
           return this.$store.getters['auth/getUsername']
+      },
+      welcomeText () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return this.username
+        case 'sm': return 'Ваші дані, ' + this.username
+        case 'md': return 'Ваші дані, ' + this.username
+        case 'lg': return 'Ваші дані, ' + this.username
+        case 'xl': return 'Ваші дані, ' + this.username
+        default: return 'Welcome!'
+      }
       }
   },
   methods: {
