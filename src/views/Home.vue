@@ -54,6 +54,17 @@
 
       <v-spacer></v-spacer>
 
+      <v-col
+        :cols="12"
+        :sm="5"
+        :md="3"
+      >
+        <v-text-field
+          v-model="searchText"
+        >
+        </v-text-field>
+      </v-col>
+
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
@@ -104,6 +115,7 @@
         </personal-area-dialog>
         <cards-board
           @updateClipboard = "updateClipboard"
+          :searchCard="searchText"
         ></cards-board>
 
       </v-container>
@@ -129,6 +141,7 @@ import CardsBoard from '../components/Home/Cards/CardsBoard'
 export default {
   data () {
     return {
+      searchText: '',
       drawer: null,
       items: [
         {

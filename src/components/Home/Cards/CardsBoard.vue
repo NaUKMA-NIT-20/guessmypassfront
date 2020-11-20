@@ -25,7 +25,7 @@
     </v-container>
 
     <v-col v-else-if="this.boardGrid"
-           v-for="card in cards"
+           v-for="card in filteredCards"
            :key="card.id"
            :cols="card.mobile"
            :xs="card.mobile"
@@ -81,7 +81,7 @@
     </v-col>
 
     <v-col v-else
-           v-for="card in cards"
+           v-for="card in filteredCards"
            :key="card.id"
            :cols="card.mobile"
            :xs="card.mobile"
@@ -225,6 +225,9 @@ export default {
       }
     }
   },
+  props: {
+    searchCard: String
+  },
   components: {
     AddCard,
     EditCard
@@ -232,6 +235,9 @@ export default {
   computed: {
     boardGridComputed () {
       return this.boardGrid
+    },
+    filteredCards () {
+      return this.cards.filter(card => card.title.includes(this.searchCard))
     }
   },
   methods: {
