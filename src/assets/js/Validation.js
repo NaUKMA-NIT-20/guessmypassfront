@@ -26,11 +26,13 @@ export const Bounds = {
 
 export const CardsValidation = {
   validateUrl (url) {
+    if (typeof url === 'undefined') return true
     if (url &&
       !RegExp(Patterns.urlRegex).test(url)) return 'Посилання не дійсне'
     else return true
   },
   validateUsername (username) {
+    if (typeof username === 'undefined') return true
     if (username === '') {
       return true
     } else if (username.length < Bounds.usernameBounds.min) {
@@ -44,6 +46,7 @@ export const CardsValidation = {
   validateCard (card) {
     const lengthMsg = 'Довжина номера картки складається з 16 цифр'
     const invalid = 'Номер картки не дійсний'
+    if (typeof card === 'undefined') return true
     if (card) {
       const unspacedCard = card.replace(/\s/g, '')
       if (unspacedCard.length !== 16) return lengthMsg
@@ -52,6 +55,7 @@ export const CardsValidation = {
     } else return 'Введіть кредитну картку'
   },
   validateCvv (cvv) {
+    if (typeof cvv === 'undefined') return true
     if (cvv && cvv.length !== 3) return 'CVV складається з 3 цифр'
     else return true
   }

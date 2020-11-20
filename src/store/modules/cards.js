@@ -1,4 +1,5 @@
 import Axios from 'axios'
+import { encryptingFunctions } from '../../assets/js/Cryptor'
 // import auth from './auth'
 // import router from '../../router/index.js'
 
@@ -9,6 +10,14 @@ export default {
   },
   mutations: {
     setCards (state, cards) {
+      cards.forEach(card => {
+        Object.keys(card).map(function (key, index) {
+          if (key !== 'id') {
+            card[key] = encryptingFunctions.decrypt(card[key])
+          }
+        })
+      })
+
       state.cards = cards
     }
   },

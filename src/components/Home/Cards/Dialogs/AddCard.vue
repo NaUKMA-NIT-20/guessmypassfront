@@ -238,6 +238,8 @@
 </template>
 <script>
   import { Patterns, Bounds, CardsValidation, AuthorisationValidation } from '../../../../assets/js/Validation'
+  import { encryptingFunctions } from '../../../../assets/js/Cryptor'
+
   export default {
       data () {
           return {
@@ -369,7 +371,7 @@
                   validation = this.validateNoteInput()
               }
               if (validation) {
-                  this.$store.dispatch('cards/addCard', {
+                  let data = {
                       name: this.data.name,
                       url: this.data.url,
                       notes: this.data.notes,
@@ -377,7 +379,13 @@
                       number: this.data.card === undefined ? undefined : this.data.card.replace(/\s/g, ''),
                       cvv: this.data.cvv,
                       password: this.data.password
-                  }).then((card) => {
+                  }
+                  Object.keys(data).map(function (key, index) {
+                      if (key !== 'id') {
+                          data[key] = encryptingFunctions.encrypt(data[key])
+                      }
+                  })
+                  this.$store.dispatch('cards/addCard', data).then((card) => {
                       this.isLoading = false
                       this.$emit('onSave')
                       this.closeDialog()
