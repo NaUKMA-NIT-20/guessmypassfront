@@ -6,7 +6,8 @@
     :no-click-animation="true"
     :persistent="true"
   >
-    <v-card>
+    <v-card height="540px"
+            :scrollable="false">
       <v-card-title>
         <span class="headline">Особистий кабінет</span>
       </v-card-title>
