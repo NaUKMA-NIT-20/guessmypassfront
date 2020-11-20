@@ -283,9 +283,11 @@
       },
       methods: {
           closeDialog () {
-              this.$refs.form.reset()
-              this.$refs.form_req.reset()
               this.$emit('close')
+              setTimeout(function () {
+                  this.$refs.form.reset()
+                  this.$refs.form_req.reset()
+              }, 500)
           },
           validatePassword () {
             if (this.data.password) {

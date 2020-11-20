@@ -2,7 +2,7 @@
   <v-dialog
     v-model="dialogState"
     max-width="600px"
-    transition="scroll-y-transition"
+    transition="fade-transition"
     :no-click-animation="true"
     :persistent="true"
   >
@@ -52,6 +52,7 @@
 </template>
 <script>
 import AccountTabs from './AccountTabs.vue'
+import { encryptingFunctions } from '../../../assets/js/Cryptor'
 
 export default {
   name: 'PersonalAreaDialog',
@@ -82,7 +83,10 @@ export default {
         this.validatePasswords()
         if (!this.invalid) {
           this.saveLoading = true
-          const tabData = this.$refs.tabs.getPasswords()
+          const tabData = {
+              password: encryptingFunctions.encryptPassword(this.$refs.tabs.getPasswords().password),
+              newPassword: encryptingFunctions.encryptPassword(this.$refs.tabs.getPasswords().newPassword)
+          }
           this.$store.dispatch('auth/changePassword', tabData)
             .then((response) => {
               this.saveLoading = false
@@ -115,14 +119,20 @@ export default {
         this.validateUsernames()
         if (!this.invalid) {
           this.saveLoading = true
-          const tabData = this.$refs.tabs.getUsernames()
+          const tabData = {
+              username: this.$refs.tabs.getUsernames().username,
+              newUsername: this.$refs.tabs.getUsernames().newUsername
+          }
+          console.log(tabData)
           this.$store.dispatch('auth/changeUsername', tabData)
             .then((response) => {
+              this.$store.dispatch('auth/saveNewUsername', tabData.newUsername)
               this.saveLoading = false
               this.$refs.tabs.cleanFields()
               console.log('Success ' + response)
               this.states.tabs = !this.states.tabs
               this.$emit('updatedUsername')
+              this.$store.dispatch('auth/toLogout')
             })
             .catch((error) => {
               this.saveLoading = false
@@ -170,7 +180,7 @@ export default {
   }
 }
 </script>
-<style lang="sass">
+<style lang="sass" scoped>
 @import "../../../assets/sass/assets/variables/colors"
 .v-text-field .v-counter
   color: $azure !important
@@ -183,6 +193,6 @@ export default {
   background-color: $azure !important
   width: 100%
   color: white
-.v-dialog:not(.v-dialog--active), .v-dialog.scroll-y-transition-enter-active
-  overflow: hidden!important
+</style>
+<style lang="sass">
 </style>

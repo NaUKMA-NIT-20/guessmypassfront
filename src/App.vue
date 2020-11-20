@@ -23,8 +23,7 @@ export default {
   .v-application
     font-family: 'Lato', sans-serif!important
   .fade-enter-active, .fade-leave-active
-    transition: transform .5s ease-out, opacity .4s
-    transform: translateY(30px)
+    transition: opacity .4s
   .fade-enter, .fade-leave-to
     opacity: 0
 </style>
