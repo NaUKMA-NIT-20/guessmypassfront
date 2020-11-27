@@ -63,12 +63,6 @@
             </v-icon>
           </v-btn>
 
-          <v-btn icon>
-            <v-icon>
-              mdi-bookmark
-            </v-icon>
-          </v-btn>
-
           <v-btn icon
                  color="red"
                  @click="deleteCard(card.id)"
@@ -115,12 +109,6 @@
             >
               <v-icon>
                 mdi-wrench
-              </v-icon>
-            </v-btn>
-
-            <v-btn icon>
-              <v-icon>
-                mdi-bookmark
               </v-icon>
             </v-btn>
 
@@ -251,6 +239,7 @@ export default {
       this.$copyText(card.toCopy)
         .then(() => {
           const text = 'Ви щойно скопіювали ' + card.cardType + ' картки ' + card.title
+          this.$emit('updateClipboard', text)
           this.$emit('updateClipboard', text)
         })
         .catch(() => {

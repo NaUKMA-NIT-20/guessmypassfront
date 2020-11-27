@@ -6,8 +6,6 @@
       :no-click-animation="true"
       :persistent="true"
       transition="scroll-y-transition"
-      :no-click-animation="true"
-      :persistent="true"
     >
       <v-card>
         <v-toolbar

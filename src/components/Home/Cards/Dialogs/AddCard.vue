@@ -7,8 +7,6 @@
       :no-click-animation="true"
       :persistent="true"
       transition="dialog-bottom-transition"
-      :no-click-animation="true"
-      :persistent="true"
     >
       <v-card>
         <v-toolbar
@@ -217,7 +215,7 @@
               <v-list-item-subtitle>Введіть додаткові дані вашої картки.</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
-          <v-form ref="form">
+          <v-form ref="form_notes">
             <v-list-item>
               <v-row>
                 <v-col :cols="cols"
@@ -229,7 +227,6 @@
                     placeholder="напиши щось"
                     label="Нотатки"
                   ></v-textarea>
-
                 </v-col></v-row>
             </v-list-item>
           </v-form>
@@ -290,9 +287,9 @@
           closeDialog () {
               this.changeCardType()
               this.$emit('close')
-              setTimeout(function () {
-                  this.$refs.form.reset()
+              setTimeout(() => {
                   this.$refs.form_req.reset()
+                  this.$refs.form_notes.reset()
               }, 500)
           },
           validatePasswordCardInput () {
